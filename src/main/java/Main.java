@@ -1,11 +1,7 @@
 import org.json.JSONObject;
 import org.json.XML;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -14,7 +10,6 @@ import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) {
-        JSONParser parser = new JSONParser();
         try {
             String jsonObject = new String(Files.readAllBytes(Paths.get("/home/ykato/Documents/bvpixel/qa/2017/10/2/21/data1")), StandardCharsets.UTF_8);
             JSONObject jsonFileObject = new JSONObject(jsonObject);
