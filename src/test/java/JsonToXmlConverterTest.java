@@ -32,7 +32,8 @@ public class JsonToXmlConverterTest {
 
     @Test
     public void convertTest() throws IOException {
-        String expected = "<title>testJson</title>";
+        String expected = "<?xml version=\"1.0\" encoding=\"ISO-8859-15\"?>\n" +
+                "<root><title>testJson</title></root>";
         JSONObject testValue = new JSONObject("{\"title\":\"testJson\"}");
         assertEquals(expected, converter.convert(testValue));
     }
