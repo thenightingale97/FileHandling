@@ -3,7 +3,6 @@ package filemanager.serviceImpl;
 import com.google.inject.Inject;
 import filemanager.service.JsonReader;
 import filemanager.service.JsonToXmlConverter;
-import filemanager.service.WatchDirectory;
 import filemanager.service.XmlWriter;
 import org.json.JSONObject;
 
@@ -13,15 +12,19 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
-public class WatchDirectoryImpl implements WatchDirectory {
+public class WatchFileDirectory {
 
     private WatchService watchService;
     private Map<WatchKey, Path> watchKeys;
+    private ExecutorService watchExecutor = Executors.newSingleThreadExecutor();
 
     @Inject
     private JsonReader reader;
@@ -32,37 +35,45 @@ public class WatchDirectoryImpl implements WatchDirectory {
     @Inject
     private XmlWriter writer;
 
-    public WatchDirectoryImpl() throws IOException {
-        this.watchService = FileSystems.getDefault().newWatchService();
+    public WatchFileDirectory() throws IOException {
         this.watchKeys = new HashMap<>();
     }
 
-    @Override
-    public void startChangeTracking(Path path) throws IOException {
-        this.registerAll(path);
-        for (; ; ) {
-            WatchKey key;
-            try {
-                key = watchService.take();
-            } catch (InterruptedException ex) {
-                return;
-            }
-
-            Path dir = watchKeys.get(key);
-            if (dir == null) {
-                System.err.println("WatchKey not recognized!!");
-                continue;
-            }
-
-            watchForEvents(key, dir);
-
-            boolean valid = key.reset();
-            if (!valid) {
-                watchKeys.remove(key);
-                if (watchKeys.isEmpty()) {
-                    break;
+    public void startChangeTracking(Path path) {
+        try {
+            watchExecutor.execute(() -> {
+                try {
+                    this.registerAll(path);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }
+                for (; ; ) {
+                    WatchKey key;
+                    try {
+                        key = watchService.take();
+                    } catch (InterruptedException ex) {
+                        return;
+                    }
+
+                    Path dir = watchKeys.get(key);
+                    if (dir == null) {
+                        System.err.println("WatchKey not recognized!!");
+                        continue;
+                    }
+
+                    watchForEvents(key, dir);
+
+                    boolean valid = key.reset();
+                    if (!valid) {
+                        watchKeys.remove(key);
+                        if (watchKeys.isEmpty()) {
+                            break;
+                        }
+                    }
+                }
+            });
+        } finally {
+            watchExecutor.shutdown();
         }
 
     }
@@ -116,5 +127,9 @@ public class WatchDirectoryImpl implements WatchDirectory {
                 x.printStackTrace();
             }
         }
+    }
+
+    public ExecutorService getWatchExecutor() {
+        return watchExecutor;
     }
 }
