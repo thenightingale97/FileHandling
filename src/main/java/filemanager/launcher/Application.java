@@ -8,17 +8,25 @@ import filemanager.serviceImpl.WatchDirectoryImpl;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Application {
     public static void main(String[] args) {
         Injector injector = Guice.createInjector(new FileServiceBinderModule());
         WatchDirectory watchDirectory = injector.getInstance(WatchDirectoryImpl.class);
+        ExecutorService watchExecutor = Executors.newSingleThreadExecutor();
         try {
-            watchDirectory.startChangeTracking(Paths.get("/home/ykato/Documents/bvpixel"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            watchExecutor.execute(() ->
+            {
+                try {
+                    watchDirectory.startChangeTracking(Paths.get("/home/ykato/Documents/bvpixel"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } finally {
+            watchExecutor.shutdown();
         }
-
     }
 }
-
