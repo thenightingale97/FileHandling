@@ -1,11 +1,13 @@
 package filemanager.serviceImpl;
 
+import com.google.inject.Singleton;
 import filemanager.service.JsonReader;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.util.stream.Collectors;
 
+@Singleton
 public class JsonReaderImpl implements JsonReader {
     @Override
     public JSONObject readJson(InputStream stream) throws IOException {
@@ -21,7 +23,6 @@ public class JsonReaderImpl implements JsonReader {
     public String getClientFromJson(InputStream stream) throws IOException {
         JSONObject jsonObject = readJson(stream);
         String client = jsonObject.getString("client");
-        System.out.println(client);
         return client;
     }
 }

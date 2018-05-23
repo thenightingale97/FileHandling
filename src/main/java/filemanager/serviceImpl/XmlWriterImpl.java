@@ -1,5 +1,6 @@
 package filemanager.serviceImpl;
 
+import com.google.inject.Singleton;
 import filemanager.service.XmlWriter;
 
 import java.io.BufferedWriter;
@@ -7,6 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+@Singleton
 public class XmlWriterImpl implements XmlWriter {
     @Override
     public void writeXmlFile(String xml, String clientFolder) throws IOException {

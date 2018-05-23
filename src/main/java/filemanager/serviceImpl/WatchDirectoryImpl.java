@@ -1,5 +1,6 @@
 package filemanager.serviceImpl;
 
+import com.google.inject.Inject;
 import filemanager.service.JsonReader;
 import filemanager.service.JsonToXmlConverter;
 import filemanager.service.WatchDirectory;
@@ -19,20 +20,26 @@ import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
 public class WatchDirectoryImpl implements WatchDirectory {
 
-    WatchService watchService;
-    Map<WatchKey, Path> watchKeys;
-    JsonReader reader = new JsonReaderImpl();
-    JsonToXmlConverter converter = new JsonToXmlConverterImpl();
-    XmlWriter writer = new XmlWriterImpl();
+    private WatchService watchService;
+    private Map<WatchKey, Path> watchKeys;
 
-    public WatchDirectoryImpl(Path path) throws IOException {
+    @Inject
+    private JsonReader reader;
+
+    @Inject
+    private JsonToXmlConverter converter;
+
+    @Inject
+    private XmlWriter writer;
+
+    public WatchDirectoryImpl() throws IOException {
         this.watchService = FileSystems.getDefault().newWatchService();
         this.watchKeys = new HashMap<>();
-        this.registerAll(path);
     }
 
     @Override
-    public void startChangeTracking() throws IOException {
+    public void startChangeTracking(Path path) throws IOException {
+        this.registerAll(path);
         for (; ; ) {
             WatchKey key;
             try {
@@ -95,7 +102,6 @@ public class WatchDirectoryImpl implements WatchDirectory {
                                 writer.writeXmlFile(xml, client);
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                System.out.println(file.toString());
                             }
                         });
             } catch (IOException e) {
