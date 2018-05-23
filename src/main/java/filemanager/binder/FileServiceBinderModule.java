@@ -8,6 +8,9 @@ import filemanager.serviceImpl.JsonReaderImpl;
 import filemanager.serviceImpl.JsonToXmlConverterImpl;
 import filemanager.serviceImpl.XmlWriterImpl;
 
+import java.nio.file.FileSystems;
+import java.nio.file.WatchService;
+
 public class FileServiceBinderModule extends AbstractModule {
     @Override
     protected void configure() {
