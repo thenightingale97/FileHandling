@@ -23,9 +23,7 @@ public class Launcher {
         Application application = new Application(properties.getProperty("environment"), properties.getProperty("rootFolder"),
                 properties.getProperty("outputPath"), properties.getProperty("fileNamePattern"));
 
-        /*application.runProgram();*/
-
-        boolean b = "dasd/PPConversion".matches(properties.getProperty("fileNamePattern"));
+        application.runProgram();
     }
 
 }
