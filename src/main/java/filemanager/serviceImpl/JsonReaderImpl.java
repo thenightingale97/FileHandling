@@ -13,7 +13,6 @@ public class JsonReaderImpl implements JsonReader {
     public JSONObject readJson(InputStream stream) throws IOException {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(stream))) {
             String jsonObject = buffer.lines().collect(Collectors.joining(System.lineSeparator()));
-            System.out.println(jsonObject);
             JSONObject jsonFileObject = new JSONObject(jsonObject);
             return jsonFileObject;
         }

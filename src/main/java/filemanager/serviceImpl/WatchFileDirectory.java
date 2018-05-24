@@ -6,13 +6,11 @@ import filemanager.service.JsonToXmlConverter;
 import filemanager.service.XmlWriter;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -96,10 +94,9 @@ public class WatchFileDirectory {
             Path name = watchEvent.context();
             Path child = dir.resolve(name);
             System.out.format("%s: %s\n", event.kind().name(), child);
-
             try (Stream<Path> paths = Files.walk(child)) {
                 paths
-                        .filter(Files::isRegularFile)
+                        .filter(file -> Files.isRegularFile(file) && matchPattern(file))
                         .forEach(file -> {
                             try {
                                 JSONObject jsonObject = reader.readJson(new FileInputStream(String.valueOf(file)));
@@ -107,6 +104,7 @@ public class WatchFileDirectory {
                                 outputPath += client;
                                 String xml = converter.convert(jsonObject);
                                 writer.writeXmlFile(xml, outputPath);
+                                outputPath = "";
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -123,6 +121,11 @@ public class WatchFileDirectory {
                 x.printStackTrace();
             }
         }
+    }
+
+    private boolean matchPattern(Path file) {
+        String fileName = file.toString();
+        return fileName.substring(fileName.lastIndexOf("/") + 1).contains(fileNamePattern);
     }
 
     public ExecutorService getWatchExecutor() {
