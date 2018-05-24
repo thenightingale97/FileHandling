@@ -42,7 +42,7 @@ public class WatchFileDirectory {
 
     public void startChangeTracking(Path path) {
         try {
-            this.registerAll(path);
+            registerAll(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,7 +96,7 @@ public class WatchFileDirectory {
             System.out.format("%s: %s\n", event.kind().name(), child);
             try (Stream<Path> paths = Files.walk(child)) {
                 paths
-                        .filter(file -> Files.isRegularFile(file) && matchPattern(file))
+                        .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                         .forEach(file -> {
                             try {
                                 JSONObject jsonObject = reader.readJson(new FileInputStream(String.valueOf(file)));
@@ -123,9 +123,8 @@ public class WatchFileDirectory {
         }
     }
 
-    private boolean matchPattern(Path file) {
-        String fileName = file.toString();
-        return fileName.substring(fileName.lastIndexOf("/") + 1).contains(fileNamePattern);
+    public boolean matchPattern(String path) {
+        return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
     }
 
     public ExecutorService getWatchExecutor() {
