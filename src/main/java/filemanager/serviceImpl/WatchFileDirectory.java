@@ -25,6 +25,8 @@ public class WatchFileDirectory {
     private WatchService watchService;
     private Map<WatchKey, Path> watchKeys;
     private ExecutorService watchExecutor = Executors.newSingleThreadExecutor();
+    private String outputPath;
+    private String fileNamePattern;
 
     @Inject
     private JsonReader reader;
@@ -42,42 +44,35 @@ public class WatchFileDirectory {
 
     public void startChangeTracking(Path path) {
         try {
-            watchExecutor.execute(() -> {
-                try {
-                    this.registerAll(path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                for (; ; ) {
-                    WatchKey key;
-                    try {
-                        key = watchService.take();
-                    } catch (InterruptedException ex) {
-                        return;
-                    }
-
-                    Path dir = watchKeys.get(key);
-                    if (dir == null) {
-                        System.err.println("WatchKey not recognized!!");
-                        continue;
-                    }
-
-                    watchForEvents(key, dir);
-
-                    boolean valid = key.reset();
-                    if (!valid) {
-                        watchKeys.remove(key);
-                        if (watchKeys.isEmpty()) {
-                            break;
-                        }
-                    }
-                }
-            });
-        } finally {
-            watchExecutor.shutdown();
+            this.registerAll(path);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        for (; ; ) {
+            WatchKey key;
+            try {
+                key = watchService.take();
+            } catch (InterruptedException ex) {
+                return;
+            }
 
+            Path dir = watchKeys.get(key);
+            if (dir == null) {
+                System.err.println("WatchKey not recognized!!");
+                continue;
+            }
+
+            watchForEvents(key, dir);
+            boolean valid = key.reset();
+            if (!valid) {
+                watchKeys.remove(key);
+                if (watchKeys.isEmpty()) {
+                    break;
+                }
+            }
+        }
     }
+
 
     private void register(Path dir) throws IOException {
         WatchKey watchKey = dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
@@ -107,11 +102,11 @@ public class WatchFileDirectory {
                         .filter(Files::isRegularFile)
                         .forEach(file -> {
                             try {
-                                File newFile = new File(file.toString());
-                                JSONObject jsonObject = reader.readJson(new FileInputStream(newFile));
-                                String client = reader.getClientFromJson(new FileInputStream(newFile));
+                                JSONObject jsonObject = reader.readJson(new FileInputStream(String.valueOf(file)));
+                                String client = reader.getClientFromJson(new FileInputStream(String.valueOf(file)));
+                                outputPath += client;
                                 String xml = converter.convert(jsonObject);
-                                writer.writeXmlFile(xml, client);
+                                writer.writeXmlFile(xml, outputPath);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -132,5 +127,21 @@ public class WatchFileDirectory {
 
     public ExecutorService getWatchExecutor() {
         return watchExecutor;
+    }
+
+    public String getOutputPath() {
+        return outputPath;
+    }
+
+    public void setOutputPath(String outputPath) {
+        this.outputPath = outputPath;
+    }
+
+    public String getFileNamePattern() {
+        return fileNamePattern;
+    }
+
+    public void setFileNamePattern(String fileNamePattern) {
+        this.fileNamePattern = fileNamePattern;
     }
 }
