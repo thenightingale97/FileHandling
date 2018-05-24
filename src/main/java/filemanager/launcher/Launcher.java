@@ -1,32 +1,36 @@
 package filemanager.launcher;
 
 import filemanager.controller.Application;
+import jdk.internal.util.xml.impl.Input;
 
+import java.io.*;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class Launcher {
 
+    Properties properties = new Properties();
+
+
     public static void main(String[] args) {
-        Application application = new Application("qa");
-        boolean flag = true;
+        InputStream inputStream;
 
-        menuPrint();
-        Scanner sc = new Scanner(System.in);
-        while (flag) {
-            int option = sc.nextInt();
-            if (option == 1) {
-                application.changeEnvironment();
-            } else if (option == 2) {
-                application.runProgram();
-            } else if (option == 3) {
-                flag = false;
-            }
+        String fileName = "config.properties";
+        ClassLoader classLoader = Launcher.class.getClassLoader();
+
+        Properties properties = new Properties();
+
+        try (InputStream resourceStream = classLoader.getResourceAsStream(fileName)) {
+            properties.load(resourceStream);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        Application application = new Application(properties.getProperty("environment"), properties.getProperty("rootFolder"),
+                properties.getProperty("outputPath"));
+        application.runProgram();
     }
 
-    private static void menuPrint() {
-        System.out.println("1. Change environment.");
-        System.out.println("2. Run program.");
-        System.out.println("3. Exit.");
-    }
+
 }
