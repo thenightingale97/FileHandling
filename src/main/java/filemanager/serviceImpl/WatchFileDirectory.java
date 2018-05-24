@@ -37,6 +37,7 @@ public class WatchFileDirectory {
 
     public WatchFileDirectory() throws IOException {
         this.watchKeys = new HashMap<>();
+        this.watchService = FileSystems.getDefault().newWatchService();
     }
 
     public void startChangeTracking(Path path) {
