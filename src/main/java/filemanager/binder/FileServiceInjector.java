@@ -11,7 +11,7 @@ import filemanager.serviceImpl.XmlWriterImpl;
 import java.nio.file.FileSystems;
 import java.nio.file.WatchService;
 
-public class FileServiceBinderModule extends AbstractModule {
+public class FileServiceInjector extends AbstractModule {
     @Override
     protected void configure() {
         bind(JsonReader.class).to(JsonReaderImpl.class);

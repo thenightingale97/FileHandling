@@ -1,7 +1,7 @@
 package filemanager.serviceImpl;
 
 import com.google.inject.Inject;
-import filemanager.service.ConvertionFromJsonToXmlService;
+import filemanager.service.ConverterFromJsonToXmlService;
 import filemanager.service.JsonReader;
 import filemanager.service.JsonToXmlConverter;
 import filemanager.service.XmlWriter;
@@ -11,7 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class ConvertionFromJsonToXmlServiceImpl implements ConvertionFromJsonToXmlService {
+public class ConverterFromJsonToXmlServiceImpl implements ConverterFromJsonToXmlService {
 
     @Inject
     private JsonReader reader;
@@ -22,10 +22,8 @@ public class ConvertionFromJsonToXmlServiceImpl implements ConvertionFromJsonToX
     @Inject
     private XmlWriter writer;
 
-    public ConvertionFromJsonToXmlServiceImpl() {
-        reader = new JsonReaderImpl();
-        converter = new JsonToXmlConverterImpl();
-        writer = new XmlWriterImpl();
+    public ConverterFromJsonToXmlServiceImpl() {
+
     }
 
     @Override
