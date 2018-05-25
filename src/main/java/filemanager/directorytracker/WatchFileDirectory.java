@@ -12,35 +12,26 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
-public class WatchFileDirectory implements TrackerFileDirectory {
+public class WatchFileDirectory extends TrackerFileDirectory {
 
     private WatchService watchService;
     private Map<WatchKey, Path> watchKeys;
-    private ExecutorService watchExecutor = Executors.newSingleThreadExecutor();
-    private String fileNamePattern;
-    private String rootFolder;
-    private String environment;
-    private String outputPath;
 
     @Inject
-    ConverterFromJsonToXmlService converter;
-
-    public WatchFileDirectory(String rootFolder, String environment, String outputPath, String fileNamePattern) throws IOException {
-        this.rootFolder = rootFolder;
-        this.environment = environment;
-        this.outputPath = outputPath;
-        this.fileNamePattern = fileNamePattern;
-        this.watchKeys = new HashMap<>();
-        this.watchService = FileSystems.getDefault().newWatchService();
-    }
+    private ConverterFromJsonToXmlService converter;
 
     public WatchFileDirectory() {
+        init();
+        this.watchKeys = new HashMap<>();
+        try {
+            this.watchService = FileSystems.getDefault().newWatchService();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
