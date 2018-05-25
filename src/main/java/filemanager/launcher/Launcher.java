@@ -1,12 +1,9 @@
 package filemanager.launcher;
 
-import filemanager.controller.Application;
-import jdk.internal.util.xml.impl.Input;
+import filemanager.serviceImpl.ScheduleFileDirectory;
 
 import java.io.*;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.Scanner;
 
 public class Launcher {
     public static void main(String[] args) {
@@ -20,10 +17,15 @@ public class Launcher {
             e.printStackTrace();
         }
 
-        Application application = new Application(properties.getProperty("environment"), properties.getProperty("rootFolder"),
-                properties.getProperty("outputPath"), properties.getProperty("fileNamePattern"));
+        ScheduleFileDirectory scheduleFileDirectory = new ScheduleFileDirectory(properties.getProperty("rootFolder"),
+                properties.getProperty("environment"),
+                properties.getProperty("outputPath"));
+        try {
+            scheduleFileDirectory.goThroughToCheckFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        application.runProgram();
     }
 
 }
