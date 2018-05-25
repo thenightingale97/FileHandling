@@ -1,5 +1,5 @@
 
-import filemanager.serviceImpl.WatchFileDirectory;
+import filemanager.directorytracker.WatchFileDirectory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,6 @@ public class WatchFileDirectoryTest {
 
     @Test
     public void matchPatternTest() throws IOException {
-        watchFileDirectory.setFileNamePattern("TestValue");
         boolean expected = true;
         boolean actual = watchFileDirectory.matchPattern("/dsa/TestValue");
         assertEquals(expected, actual);

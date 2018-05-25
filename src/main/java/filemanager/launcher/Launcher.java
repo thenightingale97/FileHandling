@@ -1,12 +1,12 @@
 package filemanager.launcher;
 
-import filemanager.serviceImpl.ScheduleFileDirectory;
+import filemanager.directorytracker.ScheduleFileDirectory;
 
 import java.io.*;
 import java.util.Properties;
 
 public class Launcher {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String fileName = "config.properties";
         ClassLoader classLoader = Launcher.class.getClassLoader();
         Properties properties = new Properties();
@@ -20,11 +20,14 @@ public class Launcher {
         ScheduleFileDirectory scheduleFileDirectory = new ScheduleFileDirectory(properties.getProperty("rootFolder"),
                 properties.getProperty("environment"),
                 properties.getProperty("outputPath"));
-        try {
-            scheduleFileDirectory.goThroughToCheckFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        scheduleFileDirectory.goThroughToCheckFile();
+
+
+       /* WatchFileDirectory watchFileDirectory = new WatchFileDirectory(properties.getProperty("rootFolder"),
+                properties.getProperty("environment"),
+                properties.getProperty("outputPath"),
+                properties.getProperty("fileNamePattern"));
+        watchFileDirectory.goThroughToCheckFile();*/
 
     }
 

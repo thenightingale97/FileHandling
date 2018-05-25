@@ -1,12 +1,12 @@
-package filemanager.serviceImpl;
+package filemanager.directorytracker;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
-import filemanager.service.JsonReader;
-import filemanager.service.JsonToXmlConverter;
-import filemanager.service.XmlWriter;
-import org.json.JSONObject;
+import com.google.inject.Injector;
+import filemanager.binder.FileServiceInjector;
+import filemanager.service.ConverterFromJsonToXmlService;
+import filemanager.serviceImpl.ConverterFromJsonToXmlServiceImpl;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -18,31 +18,37 @@ import java.util.stream.Stream;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
-public class WatchFileDirectory {
+public class WatchFileDirectory implements TrackerFileDirectory {
 
     private WatchService watchService;
     private Map<WatchKey, Path> watchKeys;
     private ExecutorService watchExecutor = Executors.newSingleThreadExecutor();
-    private String outputPath;
     private String fileNamePattern;
+    private String rootFolder;
+    private String environment;
+    private String outputPath;
 
     @Inject
-    private JsonReader reader;
+    ConverterFromJsonToXmlService converter;
 
-    @Inject
-    private JsonToXmlConverter converter;
-
-    @Inject
-    private XmlWriter writer;
-
-    public WatchFileDirectory() throws IOException {
+    public WatchFileDirectory(String rootFolder, String environment, String outputPath, String fileNamePattern) throws IOException {
+        this.rootFolder = rootFolder;
+        this.environment = environment;
+        this.outputPath = outputPath;
+        this.fileNamePattern = fileNamePattern;
         this.watchKeys = new HashMap<>();
         this.watchService = FileSystems.getDefault().newWatchService();
     }
 
-    public void startChangeTracking(Path path) {
+    public WatchFileDirectory() {
+    }
+
+    @Override
+    public void goThroughToCheckFile() {
+        Injector injector = Guice.createInjector(new FileServiceInjector());
+        converter = injector.getInstance(ConverterFromJsonToXmlServiceImpl.class);
         try {
-            registerAll(path);
+            registerAll(Paths.get(rootFolder + environment));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,12 +105,7 @@ public class WatchFileDirectory {
                         .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                         .forEach(file -> {
                             try {
-                                JSONObject jsonObject = reader.readJson(new FileInputStream(String.valueOf(file)));
-                                String client = reader.getClientFromJson(new FileInputStream(String.valueOf(file)));
-                                outputPath += client;
-                                String xml = converter.convert(jsonObject);
-                                writer.writeXmlFile(xml, outputPath);
-                                outputPath = "";
+                                converter.readJsonConvertToXmlAndWrite(file, outputPath);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -127,23 +128,4 @@ public class WatchFileDirectory {
         return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
     }
 
-    public ExecutorService getWatchExecutor() {
-        return watchExecutor;
-    }
-
-    public String getOutputPath() {
-        return outputPath;
-    }
-
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
-    }
-
-    public String getFileNamePattern() {
-        return fileNamePattern;
-    }
-
-    public void setFileNamePattern(String fileNamePattern) {
-        this.fileNamePattern = fileNamePattern;
-    }
 }
