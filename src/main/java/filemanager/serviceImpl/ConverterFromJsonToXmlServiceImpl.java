@@ -12,14 +12,14 @@ import java.nio.file.Path;
 
 public class ConverterFromJsonToXmlServiceImpl implements ConverterFromJsonToXmlService {
 
-    @Inject
     private JsonReader reader;
 
-    @Inject
     private XmlWriter writer;
 
-    public ConverterFromJsonToXmlServiceImpl() {
-
+    @Inject
+    public ConverterFromJsonToXmlServiceImpl(JsonReader reader, XmlWriter writer) {
+        this.reader = reader;
+        this.writer = writer;
     }
 
     @Override

@@ -5,25 +5,37 @@ import filemanager.service.ConverterFromJsonToXmlService;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class ScheduleFileDirectory extends TrackerFileDirectory {
 
-    @Inject
     private ConverterFromJsonToXmlService converter;
 
-    public ScheduleFileDirectory() {
+    @Inject
+    public ScheduleFileDirectory(ConverterFromJsonToXmlService converter) {
+        this.converter = converter;
         init();
     }
 
     @Override
     public void goThroughToCheckFile() {
+
+    }
+
+    @Override
+    public void goThroughToCheckFile(LocalDateTime time) {
+        System.out.println(time.getYear() + " " + time.getMonthValue() + " " + time.getDayOfMonth() + " " + time.getHour());
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(() -> {
             try {
-                Files.walk(Paths.get(rootFolder + environment), FileVisitOption.FOLLOW_LINKS)
+                Files.walk(Paths.get(rootFolder + environment + "/" +
+                        time.getYear() + "/" +
+                        time.getMonthValue() + "/" +
+                        time.getDayOfMonth() + "/" +
+                        time.getHour()), FileVisitOption.FOLLOW_LINKS)
                         .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                         .forEach(path -> {
                             try {

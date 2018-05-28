@@ -3,6 +3,8 @@ package filemanager.controller;
 import com.google.inject.Inject;
 import filemanager.directorytracker.TrackerFileDirectory;
 
+import java.time.LocalDateTime;
+
 
 public class Application {
 
@@ -16,5 +18,10 @@ public class Application {
     public void runProgram() {
         trackerFileDirectory.goThroughToCheckFile();
     }
+
+    public void runProgram(LocalDateTime time) {
+        trackerFileDirectory.goThroughToCheckFile(time);
+    }
+
 
 }

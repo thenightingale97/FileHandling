@@ -6,6 +6,7 @@ import filemanager.service.ConverterFromJsonToXmlService;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -17,10 +18,11 @@ public class WatchFileDirectory extends TrackerFileDirectory {
     private WatchService watchService;
     private Map<WatchKey, Path> watchKeys;
 
-    @Inject
     private ConverterFromJsonToXmlService converter;
 
-    public WatchFileDirectory() {
+    @Inject
+    public WatchFileDirectory(ConverterFromJsonToXmlService converter) {
+        this.converter = converter;
         init();
         this.watchKeys = new HashMap<>();
         try {
@@ -62,6 +64,10 @@ public class WatchFileDirectory extends TrackerFileDirectory {
         }
     }
 
+    @Override
+    public void goThroughToCheckFile(LocalDateTime time) {
+
+    }
 
     private void register(Path dir) throws IOException {
         WatchKey watchKey = dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);

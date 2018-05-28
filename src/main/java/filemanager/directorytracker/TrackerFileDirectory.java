@@ -4,6 +4,7 @@ import filemanager.launcher.Launcher;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Properties;
 
 public abstract class TrackerFileDirectory {
@@ -14,8 +15,9 @@ public abstract class TrackerFileDirectory {
     String fileNamePattern;
     Long timeInterval;
 
-
     abstract public void goThroughToCheckFile();
+
+    abstract public void goThroughToCheckFile(LocalDateTime time);
 
     void init() {
         String fileName = "config.properties";
