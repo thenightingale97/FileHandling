@@ -1,13 +1,32 @@
 package filemanager.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 
+@XmlRootElement
 public class XmlModel {
 
+    @JsonProperty("client")
+    @JacksonXmlProperty(localName = "clientName")
     private String clientName;
+
+    @JsonProperty("Dt")
+    @JacksonXmlProperty(localName = "transactionTime")
     private String transactionTime;
+
+    @JsonProperty("email")
     private String email;
+
+    @JsonProperty("items")
+    @JacksonXmlProperty(localName = "product")
+    @JacksonXmlElementWrapper(localName = "products")
     private ArrayList<XmlProductModel> product;
+
+    @JsonProperty("userId")
     private String externalId;
 
     public XmlModel() {
@@ -51,5 +70,16 @@ public class XmlModel {
 
     public void setExternalId(String externalId) {
         this.externalId = externalId;
+    }
+
+    @Override
+    public String toString() {
+        return "XmlModel{" +
+                "clientName='" + clientName + '\'' +
+                ", transactionTime='" + transactionTime + '\'' +
+                ", email='" + email + '\'' +
+                ", product=" + product +
+                ", externalId='" + externalId + '\'' +
+                '}';
     }
 }

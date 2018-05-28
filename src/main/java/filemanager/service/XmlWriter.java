@@ -1,9 +1,9 @@
 package filemanager.service;
 
-import filemanager.model.JsonModel;
+import filemanager.model.XmlModel;
 
 import java.io.IOException;
 
 public interface XmlWriter {
-    void writeXmlFile(JsonModel xml, String outputPath) throws IOException;
+    void writeXmlFile(XmlModel xml, String outputPath) throws IOException;
 }

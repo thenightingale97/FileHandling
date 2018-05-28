@@ -1,12 +1,21 @@
 package filemanager.model;
 
-import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties({"category", "quantity", "sku"})
 public class XmlProductModel {
 
+    @JsonProperty("name")
     private String name;
-    private BigDecimal price;
-    private Long externalId;
+
+    @JsonProperty("price")
+    private String price;
+
+    @JsonProperty("externalId")
+    private String externalId;
+
+    @JsonProperty("imageUrl")
     private String imageUrl;
 
     public XmlProductModel() {
@@ -20,19 +29,19 @@ public class XmlProductModel {
         this.name = name;
     }
 
-    public BigDecimal getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
-    public Long getExternalId() {
+    public String getExternalId() {
         return externalId;
     }
 
-    public void setExternalId(Long externalId) {
+    public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
 

@@ -1,7 +1,7 @@
 package filemanager.serviceImpl;
 
 import com.google.inject.Inject;
-import filemanager.model.JsonModel;
+import filemanager.model.XmlModel;
 import filemanager.service.ConverterFromJsonToXmlService;
 import filemanager.service.JsonReader;
 import filemanager.service.XmlWriter;
@@ -24,10 +24,10 @@ public class ConverterFromJsonToXmlServiceImpl implements ConverterFromJsonToXml
 
     @Override
     public void readJsonConvertToXmlAndWrite(Path from, String to) throws IOException {
-        JsonModel jsonModel = reader.readJson(new FileInputStream(String.valueOf(from)));
+        XmlModel xmlModel = reader.readJson(new FileInputStream(String.valueOf(from)));
         String client = reader.getClientFromJson(new FileInputStream(String.valueOf(from)));
         String temporaryPath = to + client;
-        writer.writeXmlFile(jsonModel, temporaryPath);
+        writer.writeXmlFile(xmlModel, temporaryPath);
     }
 
 }

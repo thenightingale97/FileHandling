@@ -12,7 +12,7 @@ public class Launcher {
         Injector guice = Guice.createInjector(new FileServiceBinderModule());
         Application application = guice.getInstance(Application.class);
         LocalDateTime time = LocalDateTime.of(2018, 5, 23, 6, 0);
-        application.runProgram(time);
+        application.runProgram(LocalDateTime.now());
     }
 
 }
