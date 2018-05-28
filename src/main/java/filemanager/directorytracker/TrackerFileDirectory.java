@@ -12,6 +12,7 @@ public abstract class TrackerFileDirectory {
     String environment;
     String outputPath;
     String fileNamePattern;
+    Long timeInterval;
 
 
     abstract public void goThroughToCheckFile();
@@ -29,5 +30,6 @@ public abstract class TrackerFileDirectory {
         outputPath = properties.getProperty("outputPath");
         environment = properties.getProperty("environment");
         fileNamePattern = properties.getProperty("fileNamePattern");
+        timeInterval = Long.valueOf(properties.getProperty("timeInterval"));
     }
 }
