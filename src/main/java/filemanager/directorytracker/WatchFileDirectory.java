@@ -1,11 +1,7 @@
 package filemanager.directorytracker;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import filemanager.binder.FileServiceBinderModule;
 import filemanager.service.ConverterFromJsonToXmlService;
-import filemanager.serviceImpl.ConverterFromJsonToXmlServiceImpl;
 
 import java.io.IOException;
 import java.nio.file.*;
