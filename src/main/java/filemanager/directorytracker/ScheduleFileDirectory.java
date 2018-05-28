@@ -4,7 +4,7 @@ package filemanager.directorytracker;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import filemanager.binder.FileServiceInjector;
+import filemanager.binder.FileServiceBinderModule;
 import filemanager.service.ConverterFromJsonToXmlService;
 import filemanager.serviceImpl.ConverterFromJsonToXmlServiceImpl;
 
@@ -22,22 +22,24 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     @Override
     public void goThroughToCheckFile() {
-        Injector injector = Guice.createInjector(new FileServiceInjector());
-        converter = injector.getInstance(ConverterFromJsonToXmlServiceImpl.class);
         try {
-            Files.walk(Paths.get(rootFolder + environment), FileVisitOption.FOLLOW_LINKS).filter(Files::isRegularFile).forEach(path -> {
+            Files.walk(Paths.get(rootFolder + environment), FileVisitOption.FOLLOW_LINKS)
+                    .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
+                    .forEach(path -> {
+                        try {
+                            converter.readJsonConvertToXmlAndWrite(path, outputPath);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
-                try {
-                    converter.readJsonConvertToXmlAndWrite(path, outputPath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            });
+                    });
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public boolean matchPattern(String path) {
+        return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
     }
 
 }

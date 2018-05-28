@@ -3,7 +3,7 @@ package filemanager.directorytracker;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import filemanager.binder.FileServiceInjector;
+import filemanager.binder.FileServiceBinderModule;
 import filemanager.service.ConverterFromJsonToXmlService;
 import filemanager.serviceImpl.ConverterFromJsonToXmlServiceImpl;
 
@@ -36,8 +36,6 @@ public class WatchFileDirectory extends TrackerFileDirectory {
 
     @Override
     public void goThroughToCheckFile() {
-        Injector injector = Guice.createInjector(new FileServiceInjector());
-        converter = injector.getInstance(ConverterFromJsonToXmlServiceImpl.class);
         try {
             registerAll(Paths.get(rootFolder + environment));
         } catch (IOException e) {
