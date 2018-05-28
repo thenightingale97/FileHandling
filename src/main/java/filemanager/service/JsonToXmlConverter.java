@@ -1,7 +1,7 @@
 package filemanager.service;
 
-import org.json.JSONObject;
+import filemanager.model.JsonModel;
 
 public interface JsonToXmlConverter {
-    String convert(JSONObject jsonObject);
+    String convert(JsonModel jsonModel);
 }
