@@ -22,36 +22,32 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     @Override
     public void goThroughToCheckFile() {
-
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(() -> this.goThroughToCheckFile(LocalDateTime.now()), 0, timeInterval, TimeUnit.MINUTES);
     }
 
     @Override
     public void goThroughToCheckFile(LocalDateTime time) {
-        System.out.println(time.getYear() + " " + time.getMonthValue() + " " + time.getDayOfMonth() + " " + time.getHour());
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(() -> {
-            try {
-                Files.walk(Paths.get(rootFolder + environment + "/" +
-                        time.getYear() + "/" +
-                        time.getMonthValue() + "/" +
-                        time.getDayOfMonth() + "/" +
-                        time.getHour()), FileVisitOption.FOLLOW_LINKS)
-                        .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
-                        .forEach(path -> {
-                            try {
-                                converter.readJsonConvertToXmlAndWrite(path, outputPath);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                        });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }, 0, timeInterval, TimeUnit.MINUTES);
+        try {
+            Files.walk(Paths.get(rootFolder + environment + "/" +
+                    time.getYear() + "/" +
+                    time.getMonthValue() + "/" +
+                    time.getDayOfMonth() + "/" +
+                    time.getHour()), FileVisitOption.FOLLOW_LINKS)
+                    .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
+                    .forEach(path -> {
+                        try {
+                            converter.readJsonConvertToXmlAndWrite(path, outputPath);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public boolean matchPattern(String path) {
+    private boolean matchPattern(String path) {
         return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
     }
 
