@@ -1,32 +1,27 @@
 package filemanager.controller;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import filemanager.binder.FileServiceBinderModule;
-import filemanager.serviceImpl.WatchFileDirectory;
+import com.google.inject.Inject;
+import filemanager.directorytracker.TrackerFileDirectory;
 
-import java.nio.file.Paths;
+import java.time.LocalDateTime;
+
 
 public class Application {
 
-    private String environment;
-    private String rootFolder;
-    private String outputPath;
-    private String fileNamePattern;
-    private WatchFileDirectory watchDirectory;
+    private TrackerFileDirectory trackerFileDirectory;
 
-    public Application(String environment, String rootFolder, String outputPath, String fileNamePattern) {
-        this.outputPath = outputPath;
-        this.environment = environment;
-        this.rootFolder = rootFolder;
-        this.fileNamePattern = fileNamePattern;
+    @Inject
+    public Application(TrackerFileDirectory trackerFileDirectory) {
+        this.trackerFileDirectory = trackerFileDirectory;
     }
 
     public void runProgram() {
-        Injector injector = Guice.createInjector(new FileServiceBinderModule());
-        watchDirectory = injector.getInstance(WatchFileDirectory.class);
-        watchDirectory.setOutputPath(outputPath);
-        watchDirectory.setFileNamePattern(fileNamePattern);
-        watchDirectory.startChangeTracking(Paths.get(rootFolder + environment));
+        trackerFileDirectory.goThroughToCheckFile();
     }
+
+    public void runProgram(LocalDateTime time) {
+        trackerFileDirectory.goThroughToCheckFile(time);
+    }
+
+
 }

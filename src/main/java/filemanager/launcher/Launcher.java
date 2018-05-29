@@ -1,29 +1,18 @@
 package filemanager.launcher;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import filemanager.binder.FileServiceBinderModule;
 import filemanager.controller.Application;
-import jdk.internal.util.xml.impl.Input;
 
-import java.io.*;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Scanner;
+import java.time.LocalDateTime;
 
 public class Launcher {
     public static void main(String[] args) {
-        String fileName = "config.properties";
-        ClassLoader classLoader = Launcher.class.getClassLoader();
-        Properties properties = new Properties();
-
-        try (InputStream resourceStream = classLoader.getResourceAsStream(fileName)) {
-            properties.load(resourceStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Application application = new Application(properties.getProperty("environment"), properties.getProperty("rootFolder"),
-                properties.getProperty("outputPath"), properties.getProperty("fileNamePattern"));
-
-        application.runProgram();
+        Injector guice = Guice.createInjector(new FileServiceBinderModule());
+        Application application = guice.getInstance(Application.class);
+        LocalDateTime time = LocalDateTime.of(2018, 5, 23, 6, 0);
+        application.runProgram(LocalDateTime.now());
     }
 
 }

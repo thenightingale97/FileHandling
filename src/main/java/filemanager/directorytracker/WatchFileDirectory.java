@@ -1,48 +1,41 @@
-package filemanager.serviceImpl;
+package filemanager.directorytracker;
 
 import com.google.inject.Inject;
-import filemanager.service.JsonReader;
-import filemanager.service.JsonToXmlConverter;
-import filemanager.service.XmlWriter;
-import org.json.JSONObject;
+import filemanager.service.ConverterFromJsonToXmlService;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
-public class WatchFileDirectory {
+public class WatchFileDirectory extends TrackerFileDirectory {
 
     private WatchService watchService;
     private Map<WatchKey, Path> watchKeys;
-    private ExecutorService watchExecutor = Executors.newSingleThreadExecutor();
-    private String outputPath;
-    private String fileNamePattern;
+
+    private ConverterFromJsonToXmlService converter;
 
     @Inject
-    private JsonReader reader;
-
-    @Inject
-    private JsonToXmlConverter converter;
-
-    @Inject
-    private XmlWriter writer;
-
-    public WatchFileDirectory() throws IOException {
+    public WatchFileDirectory(ConverterFromJsonToXmlService converter) {
+        this.converter = converter;
+        init();
         this.watchKeys = new HashMap<>();
-        this.watchService = FileSystems.getDefault().newWatchService();
+        try {
+            this.watchService = FileSystems.getDefault().newWatchService();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void startChangeTracking(Path path) {
+    @Override
+    public void goThroughToCheckFile() {
         try {
-            registerAll(path);
+            registerAll(Paths.get(rootFolder + environment));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,6 +64,10 @@ public class WatchFileDirectory {
         }
     }
 
+    @Override
+    public void goThroughToCheckFile(LocalDateTime time) {
+
+    }
 
     private void register(Path dir) throws IOException {
         WatchKey watchKey = dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
@@ -99,12 +96,7 @@ public class WatchFileDirectory {
                         .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                         .forEach(file -> {
                             try {
-                                JSONObject jsonObject = reader.readJson(new FileInputStream(String.valueOf(file)));
-                                String client = reader.getClientFromJson(new FileInputStream(String.valueOf(file)));
-                                outputPath += client;
-                                String xml = converter.convert(jsonObject);
-                                writer.writeXmlFile(xml, outputPath);
-                                outputPath = "";
+                                converter.readJsonConvertToXmlAndWrite(file, outputPath);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -127,23 +119,4 @@ public class WatchFileDirectory {
         return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
     }
 
-    public ExecutorService getWatchExecutor() {
-        return watchExecutor;
-    }
-
-    public String getOutputPath() {
-        return outputPath;
-    }
-
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
-    }
-
-    public String getFileNamePattern() {
-        return fileNamePattern;
-    }
-
-    public void setFileNamePattern(String fileNamePattern) {
-        this.fileNamePattern = fileNamePattern;
-    }
 }
