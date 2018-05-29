@@ -17,6 +17,5 @@ public class XmlWriterImpl implements XmlWriter {
         file.getParentFile().mkdirs();
         ObjectMapper objectMapper = new XmlMapper();
         objectMapper.writeValue(file, interaction);
-        System.out.println(interaction);
     }
 }

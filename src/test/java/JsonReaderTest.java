@@ -1,4 +1,7 @@
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.google.inject.Inject;
+import filemanager.model.Interaction;
 import filemanager.service.JsonReader;
 import filemanager.serviceImpl.JsonReaderImpl;
 import org.json.JSONException;
@@ -18,7 +21,7 @@ public class JsonReaderTest {
     JsonReader reader;
 
     @After
-    public void tearDown()  {
+    public void tearDown() {
         reader = null;
     }
 
@@ -27,25 +30,30 @@ public class JsonReaderTest {
         reader = new JsonReaderImpl();
     }
 
-    @Test(expected = JSONException.class)
+    @Test(expected = JsonParseException.class)
     public void readJsonInvalidJsonInputTest() throws IOException {
         String testValue = "wrongJson";
         reader.readJson(new ByteArrayInputStream(testValue.getBytes()));
     }
 
-   /* @Test
-    public void readJsonValidStreamReadingTest() throws IOException {
-        JSONObject actual;
-        JSONObject expected = new JSONObject("{\"phonetype\":\"N95\",\"cat\":\"WP\"}");
-        String testValue = "{\"phonetype\":\"N95\",\"cat\":\"WP\"}";
+    @Test(expected = UnrecognizedPropertyException.class)
+    public void readJsonNotAppropriateDataTest() throws IOException {
+        Interaction actual;
+        Interaction expected = new Interaction();
+        expected.setClientName("Test");
+        String testValue = "{\"clientTest\":\"Test\",\"DtTest\":\"\",\"emailTest\":\"\",\"userId\":\"\"}";
         actual = reader.readJson(new ByteArrayInputStream(testValue.getBytes()));
-        assertEquals(expected.toString(), actual.toString());
-    }*/
+        assertEquals(expected.getClientName(), actual.getClientName());
+    }
 
-   /* @Test
-    public void getClientFromJsonTest() throws IOException {
-        String testValue = "{\"phonetype\":\"N95\",\"cat\":\"WP\", \"client\":\"Carl\"}";
-        String expected = "Carl";
-        assertEquals(expected, reader.getClientFromJson(new ByteArrayInputStream(testValue.getBytes())));
-    }*/
+    @Test
+    public void readJsonValidStreamReadingTest() throws IOException {
+        Interaction actual;
+        Interaction expected = new Interaction();
+        expected.setClientName("Test");
+        String testValue = "{\"client\":\"Test\",\"Dt\":\"\",\"email\":\"\",\"userId\":\"\"}";
+        actual = reader.readJson(new ByteArrayInputStream(testValue.getBytes()));
+        assertEquals(expected.getClientName(), actual.getClientName());
+    }
+
 }
