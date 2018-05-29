@@ -25,7 +25,7 @@ public class Interaction {
     @JsonProperty("items")
     @JacksonXmlProperty(localName = "Product")
     @JacksonXmlElementWrapper(localName = "Products")
-    private ArrayList<InteractionProduct> product;
+    private ArrayList<Product> product;
 
     @JsonProperty("userId")
     @JacksonXmlProperty(localName = "ExternalId")
@@ -58,11 +58,11 @@ public class Interaction {
         this.email = email;
     }
 
-    public ArrayList<InteractionProduct> getProduct() {
+    public ArrayList<Product> getProduct() {
         return product;
     }
 
-    public void setProduct(ArrayList<InteractionProduct> product) {
+    public void setProduct(ArrayList<Product> product) {
         this.product = product;
     }
 
