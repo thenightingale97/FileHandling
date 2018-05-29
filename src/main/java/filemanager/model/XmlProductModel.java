@@ -2,20 +2,25 @@ package filemanager.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
-@JsonIgnoreProperties({"category", "quantity", "sku"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class XmlProductModel {
 
     @JsonProperty("name")
+    @JacksonXmlProperty(localName = "Name")
     private String name;
 
     @JsonProperty("price")
+    @JacksonXmlProperty(localName = "Price")
     private String price;
 
-    @JsonProperty("externalId")
+    @JsonProperty("orderId")
+    @JacksonXmlProperty(localName = "OrderId")
     private String externalId;
 
     @JsonProperty("imageUrl")
+    @JacksonXmlProperty(localName = "ImageUrl")
     private String imageUrl;
 
     public XmlProductModel() {
@@ -51,5 +56,15 @@ public class XmlProductModel {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "XmlProductModel{" +
+                "name='" + name + '\'' +
+                ", price='" + price + '\'' +
+                ", externalId='" + externalId + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
     }
 }

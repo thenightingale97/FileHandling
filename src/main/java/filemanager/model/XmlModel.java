@@ -3,30 +3,31 @@ package filemanager.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 
-@XmlRootElement
+@JacksonXmlRootElement(localName = "Interaction")
 public class XmlModel {
 
     @JsonProperty("client")
-    @JacksonXmlProperty(localName = "clientName")
+    @JacksonXmlProperty(localName = "ClientName")
     private String clientName;
 
     @JsonProperty("Dt")
-    @JacksonXmlProperty(localName = "transactionTime")
+    @JacksonXmlProperty(localName = "TransactionTime")
     private String transactionTime;
 
     @JsonProperty("email")
     private String email;
 
     @JsonProperty("items")
-    @JacksonXmlProperty(localName = "product")
-    @JacksonXmlElementWrapper(localName = "products")
+    @JacksonXmlProperty(localName = "Product")
+    @JacksonXmlElementWrapper(localName = "{roducts")
     private ArrayList<XmlProductModel> product;
 
-    @JsonProperty("userId")
+    @JsonProperty("UserId")
     private String externalId;
 
     public XmlModel() {
