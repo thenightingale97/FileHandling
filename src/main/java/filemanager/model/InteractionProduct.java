@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class XmlProductModel {
+public class InteractionProduct {
 
     @JsonProperty("name")
     @JacksonXmlProperty(localName = "Name")
@@ -23,7 +23,7 @@ public class XmlProductModel {
     @JacksonXmlProperty(localName = "ImageUrl")
     private String imageUrl;
 
-    public XmlProductModel() {
+    public InteractionProduct() {
     }
 
     public String getName() {
@@ -60,7 +60,7 @@ public class XmlProductModel {
 
     @Override
     public String toString() {
-        return "XmlProductModel{" +
+        return "InteractionProduct{" +
                 "name='" + name + '\'' +
                 ", price='" + price + '\'' +
                 ", externalId='" + externalId + '\'' +

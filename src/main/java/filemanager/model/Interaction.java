@@ -5,11 +5,10 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 
-@JacksonXmlRootElement(localName = "Interaction")
-public class XmlModel {
+@JacksonXmlRootElement
+public class Interaction {
 
     @JsonProperty("client")
     @JacksonXmlProperty(localName = "ClientName")
@@ -20,17 +19,19 @@ public class XmlModel {
     private String transactionTime;
 
     @JsonProperty("email")
+    @JacksonXmlProperty(localName = "Email")
     private String email;
 
     @JsonProperty("items")
     @JacksonXmlProperty(localName = "Product")
     @JacksonXmlElementWrapper(localName = "Products")
-    private ArrayList<XmlProductModel> product;
+    private ArrayList<InteractionProduct> product;
 
-    @JsonProperty("UserId")
+    @JsonProperty("userId")
+    @JacksonXmlProperty(localName = "ExternalId")
     private String externalId;
 
-    public XmlModel() {
+    public Interaction() {
     }
 
     public String getClientName() {
@@ -57,11 +58,11 @@ public class XmlModel {
         this.email = email;
     }
 
-    public ArrayList<XmlProductModel> getProduct() {
+    public ArrayList<InteractionProduct> getProduct() {
         return product;
     }
 
-    public void setProduct(ArrayList<XmlProductModel> product) {
+    public void setProduct(ArrayList<InteractionProduct> product) {
         this.product = product;
     }
 
@@ -75,7 +76,7 @@ public class XmlModel {
 
     @Override
     public String toString() {
-        return "XmlModel{" +
+        return "Interaction{" +
                 "clientName='" + clientName + '\'' +
                 ", transactionTime='" + transactionTime + '\'' +
                 ", email='" + email + '\'' +
