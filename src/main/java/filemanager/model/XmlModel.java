@@ -24,7 +24,7 @@ public class XmlModel {
 
     @JsonProperty("items")
     @JacksonXmlProperty(localName = "Product")
-    @JacksonXmlElementWrapper(localName = "{roducts")
+    @JacksonXmlElementWrapper(localName = "Products")
     private ArrayList<XmlProductModel> product;
 
     @JsonProperty("UserId")
