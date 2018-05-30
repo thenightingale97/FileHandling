@@ -18,6 +18,9 @@ public class FileHandlerConfiguration extends Configuration {
     @NotEmpty
     private String fileNamePattern;
 
+    @NotEmpty
+    private String timeInterval;
+
     @JsonProperty
     public String getEnvironment() {
         return environment;
@@ -56,5 +59,15 @@ public class FileHandlerConfiguration extends Configuration {
     @JsonProperty
     public void setFileNamePattern(String fileNamePattern) {
         this.fileNamePattern = fileNamePattern;
+    }
+
+    @JsonProperty
+    public String getTimeInterval() {
+        return timeInterval;
+    }
+
+    @JsonProperty
+    public void setTimeInterval(String timeInterval) {
+        this.timeInterval = timeInterval;
     }
 }

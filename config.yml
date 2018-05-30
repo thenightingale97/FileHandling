@@ -1,0 +1,12 @@
+environment: production
+rootFolder: /home/ykato/Documents/bvpixel/
+outputPath: /home/ykato/Documents/clients/
+fileNamePattern: PPConversion
+timeInterval: 1
+server:
+  applicationConnectors:
+  - type: http
+    port: 9000
+  adminConnectors:
+  - type: http
+    port: 9001
