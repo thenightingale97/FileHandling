@@ -6,12 +6,12 @@ import filemanager.directorytracker.TrackerFileDirectory;
 import java.time.LocalDateTime;
 
 
-public class Application {
+public class FileHandlerApplication {
 
     private TrackerFileDirectory trackerFileDirectory;
 
     @Inject
-    public Application(TrackerFileDirectory trackerFileDirectory) {
+    public FileHandlerApplication(TrackerFileDirectory trackerFileDirectory) {
         this.trackerFileDirectory = trackerFileDirectory;
     }
 
