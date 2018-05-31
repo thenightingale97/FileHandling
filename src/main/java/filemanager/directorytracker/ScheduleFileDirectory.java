@@ -19,7 +19,6 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
     @Inject
     public ScheduleFileDirectory(ConverterFromJsonToXmlService converter) {
         this.converter = converter;
-        init();
     }
 
     @Override

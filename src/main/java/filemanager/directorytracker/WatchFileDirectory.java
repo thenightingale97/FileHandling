@@ -23,7 +23,6 @@ public class WatchFileDirectory extends TrackerFileDirectory {
     @Inject
     public WatchFileDirectory(ConverterFromJsonToXmlService converter) {
         this.converter = converter;
-        init();
         this.watchKeys = new HashMap<>();
         try {
             this.watchService = FileSystems.getDefault().newWatchService();
