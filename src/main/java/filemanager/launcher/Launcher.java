@@ -20,6 +20,5 @@ public class Launcher extends Application<FileHandlerConfiguration> {
         ScheduleFileDirectory trackerFileDirectory = guice.getInstance(ScheduleFileDirectory.class);
         ScheduleFileDirectoryManaged managed = new ScheduleFileDirectoryManaged(trackerFileDirectory, configuration);
         environment.lifecycle().manage(managed);
-        trackerFileDirectory.goThroughToCheckFile();
     }
 }

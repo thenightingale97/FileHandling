@@ -19,6 +19,7 @@ public class ScheduleFileDirectoryManaged implements Managed {
 
     @Override
     public void start() throws Exception {
+        scheduleFileDirectory.goThroughToCheckFile();
     }
 
     @Override
