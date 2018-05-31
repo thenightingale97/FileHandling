@@ -5,9 +5,10 @@ import com.google.inject.Injector;
 import filemanager.binder.FileServiceBinderModule;
 import filemanager.configuration.FileHandlerConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
-import filemanager.managed.ScheduleFileDirectoryManaged;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
+
+import java.util.concurrent.TimeUnit;
 
 public class Launcher extends Application<FileHandlerConfiguration> {
     public static void main(String[] args) throws Exception {
@@ -18,7 +19,12 @@ public class Launcher extends Application<FileHandlerConfiguration> {
     public void run(FileHandlerConfiguration configuration, Environment environment) {
         Injector guice = Guice.createInjector(new FileServiceBinderModule());
         ScheduleFileDirectory trackerFileDirectory = guice.getInstance(ScheduleFileDirectory.class);
-        ScheduleFileDirectoryManaged managed = new ScheduleFileDirectoryManaged(trackerFileDirectory, configuration);
-        environment.lifecycle().manage(managed);
+        trackerFileDirectory.rootFolder = configuration.getRootFolder();
+        trackerFileDirectory.environment = configuration.getEnvironment();
+        trackerFileDirectory.outputPath = configuration.getOutputPath();
+        trackerFileDirectory.fileNamePattern = configuration.getFileNamePattern();
+        environment.lifecycle().scheduledExecutorService("scheduledTracker")
+                .build()
+                .schedule((Runnable) trackerFileDirectory::goThroughToCheckFile, Long.parseLong(configuration.getTimeInterval()), TimeUnit.MINUTES);
     }
 }

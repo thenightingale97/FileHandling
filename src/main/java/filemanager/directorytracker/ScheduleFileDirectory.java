@@ -14,8 +14,6 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     private ConverterFromJsonToXmlService converter;
 
-    private ScheduledExecutorService executorService;
-
     @Inject
     public ScheduleFileDirectory(ConverterFromJsonToXmlService converter) {
         this.converter = converter;
@@ -23,8 +21,7 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     @Override
     public void goThroughToCheckFile() {
-        executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(() -> this.goThroughToCheckFile(LocalDateTime.now()), 0, timeInterval, TimeUnit.MINUTES);
+        this.goThroughToCheckFile(LocalDateTime.now());
     }
 
     @Override
@@ -50,12 +47,6 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     private boolean matchPattern(String path) {
         return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
-    }
-
-    public void stopExecutorService() {
-        if (!executorService.isShutdown()) {
-            executorService.shutdown();
-        }
     }
 
 }
