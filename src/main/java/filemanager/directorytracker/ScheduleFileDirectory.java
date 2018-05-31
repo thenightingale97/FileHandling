@@ -51,11 +51,10 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
     private boolean matchPattern(String path) {
         return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
     }
-
+  
     public void stopExecutorService() {
         if (!executorService.isShutdown()) {
             executorService.shutdown();
         }
     }
-
 }
