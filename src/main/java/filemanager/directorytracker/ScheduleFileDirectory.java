@@ -10,17 +10,15 @@ import java.time.LocalDateTime;
 public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     private ConverterFromJsonToXmlService converter;
-    private LocalDateTime timeNow;
 
     @Inject
     public ScheduleFileDirectory(ConverterFromJsonToXmlService converter) {
         this.converter = converter;
-        timeNow = LocalDateTime.now();
     }
 
     @Override
     public void goThroughToCheckFile() {
-        this.goThroughToCheckFile(timeNow);
+        this.goThroughToCheckFile(LocalDateTime.now());
     }
 
     @Override
@@ -46,10 +44,6 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     private boolean matchPattern(String path) {
         return path.substring(path.lastIndexOf("/") + 1).contains(getFileNamePattern());
-    }
-
-    public LocalDateTime getTimeNow() {
-        return timeNow;
     }
 
 }
