@@ -4,6 +4,7 @@ import com.google.inject.*;
 import filemanager.configuration.FileHandlerConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.directorytracker.TrackerFileDirectory;
+import filemanager.resource.ClientResource;
 import filemanager.service.ConverterFromJsonToXmlService;
 import filemanager.service.JsonReader;
 import filemanager.service.XmlWriter;
@@ -37,4 +38,9 @@ public class FileServiceBinderModule extends AbstractModule {
         return fileDirectory;
     }
 
+    @Provides
+    public ClientResource getClient(ScheduleFileDirectory scheduleFileDirectory) {
+        ClientResource clientResource = new ClientResource(scheduleFileDirectory);
+        return clientResource;
+    }
 }
