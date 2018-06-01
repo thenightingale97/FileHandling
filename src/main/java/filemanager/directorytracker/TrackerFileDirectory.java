@@ -1,37 +1,56 @@
 package filemanager.directorytracker;
 
-import filemanager.launcher.Launcher;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Properties;
 
 public abstract class TrackerFileDirectory {
 
-    String rootFolder;
-    String environment;
-    String outputPath;
-    String fileNamePattern;
-    Long timeInterval;
+    private String rootFolder;
+    private String environment;
+    private String outputPath;
+    private String fileNamePattern;
+    private Long timeInterval;
 
     abstract public void goThroughToCheckFile();
 
     abstract public void goThroughToCheckFile(LocalDateTime time);
 
-    void init() {
-        String fileName = "config.properties";
-        ClassLoader classLoader = Launcher.class.getClassLoader();
-        Properties properties = new Properties();
-        try (InputStream resourceStream = classLoader.getResourceAsStream(fileName)) {
-            properties.load(resourceStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        rootFolder = properties.getProperty("rootFolder");
-        outputPath = properties.getProperty("outputPath");
-        environment = properties.getProperty("environment");
-        fileNamePattern = properties.getProperty("fileNamePattern");
-        timeInterval = Long.valueOf(properties.getProperty("timeInterval"));
+    public String getRootFolder() {
+        return rootFolder;
+    }
+
+    public void setRootFolder(String rootFolder) {
+        this.rootFolder = rootFolder;
+    }
+
+    public String getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
+
+    public String getOutputPath() {
+        return outputPath;
+    }
+
+    public void setOutputPath(String outputPath) {
+        this.outputPath = outputPath;
+    }
+
+    public String getFileNamePattern() {
+        return fileNamePattern;
+    }
+
+    public void setFileNamePattern(String fileNamePattern) {
+        this.fileNamePattern = fileNamePattern;
+    }
+
+    public Long getTimeInterval() {
+        return timeInterval;
+    }
+
+    public void setTimeInterval(Long timeInterval) {
+        this.timeInterval = timeInterval;
     }
 }

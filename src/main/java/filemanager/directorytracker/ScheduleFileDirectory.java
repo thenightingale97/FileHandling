@@ -6,9 +6,6 @@ import filemanager.service.ConverterFromJsonToXmlService;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class ScheduleFileDirectory extends TrackerFileDirectory {
 
@@ -17,19 +14,17 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
     @Inject
     public ScheduleFileDirectory(ConverterFromJsonToXmlService converter) {
         this.converter = converter;
-        init();
     }
 
     @Override
     public void goThroughToCheckFile() {
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(() -> this.goThroughToCheckFile(LocalDateTime.now()), 0, timeInterval, TimeUnit.MINUTES);
+        this.goThroughToCheckFile(LocalDateTime.now());
     }
 
     @Override
     public void goThroughToCheckFile(LocalDateTime time) {
         try {
-            Files.walk(Paths.get(rootFolder + environment + "/" +
+            Files.walk(Paths.get(getRootFolder() + getEnvironment() + "/" +
                     time.getYear() + "/" +
                     time.getMonthValue() + "/" +
                     time.getDayOfMonth() + "/" +
@@ -37,7 +32,7 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
                     .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                     .forEach(path -> {
                         try {
-                            converter.readJsonConvertToXmlAndWrite(path, outputPath);
+                            converter.readJsonConvertToXmlAndWrite(path, getOutputPath());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -48,7 +43,7 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
     }
 
     private boolean matchPattern(String path) {
-        return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
+        return path.substring(path.lastIndexOf("/") + 1).contains(getFileNamePattern());
     }
 
 }

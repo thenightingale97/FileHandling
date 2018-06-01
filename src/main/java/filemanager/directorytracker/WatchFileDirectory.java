@@ -23,7 +23,6 @@ public class WatchFileDirectory extends TrackerFileDirectory {
     @Inject
     public WatchFileDirectory(ConverterFromJsonToXmlService converter) {
         this.converter = converter;
-        init();
         this.watchKeys = new HashMap<>();
         try {
             this.watchService = FileSystems.getDefault().newWatchService();
@@ -35,7 +34,7 @@ public class WatchFileDirectory extends TrackerFileDirectory {
     @Override
     public void goThroughToCheckFile() {
         try {
-            registerAll(Paths.get(rootFolder + environment));
+            registerAll(Paths.get(getRootFolder() + getEnvironment()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,7 +95,7 @@ public class WatchFileDirectory extends TrackerFileDirectory {
                         .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                         .forEach(file -> {
                             try {
-                                converter.readJsonConvertToXmlAndWrite(file, outputPath);
+                                converter.readJsonConvertToXmlAndWrite(file, getOutputPath());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -116,7 +115,7 @@ public class WatchFileDirectory extends TrackerFileDirectory {
     }
 
     public boolean matchPattern(String path) {
-        return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
+        return path.substring(path.lastIndexOf("/") + 1).contains(getFileNamePattern());
     }
 
 }
