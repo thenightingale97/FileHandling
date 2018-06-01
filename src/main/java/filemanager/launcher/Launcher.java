@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import filemanager.binder.FileServiceBinderModule;
 import filemanager.configuration.FileHandlerConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
+import filemanager.healthchecks.InternetConnectionHealthCheck;
 import filemanager.resource.ClientResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
@@ -24,5 +25,7 @@ public class Launcher extends Application<FileHandlerConfiguration> {
         environment.lifecycle().scheduledExecutorService("scheduledTracker")
                 .build()
                 .schedule((Runnable) trackerFileDirectory::goThroughToCheckFile, Long.parseLong(configuration.getTimeInterval()), TimeUnit.MINUTES);
+        environment.healthChecks().register("Internet connection check", new InternetConnectionHealthCheck());
+        environment.healthChecks().runHealthChecks();
     }
 }
