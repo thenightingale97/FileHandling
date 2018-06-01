@@ -6,28 +6,27 @@ import filemanager.service.ConverterFromJsonToXmlService;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     private ConverterFromJsonToXmlService converter;
+    private LocalDateTime timeNow;
 
     @Inject
     public ScheduleFileDirectory(ConverterFromJsonToXmlService converter) {
         this.converter = converter;
+        timeNow = LocalDateTime.now();
     }
 
     @Override
     public void goThroughToCheckFile() {
-        this.goThroughToCheckFile(LocalDateTime.now());
+        this.goThroughToCheckFile(timeNow);
     }
 
     @Override
     public void goThroughToCheckFile(LocalDateTime time) {
         try {
-            Files.walk(Paths.get(rootFolder + environment + "/" +
+            Files.walk(Paths.get(getRootFolder() + getEnvironment() + "/" +
                     time.getYear() + "/" +
                     time.getMonthValue() + "/" +
                     time.getDayOfMonth() + "/" +
@@ -35,7 +34,7 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
                     .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                     .forEach(path -> {
                         try {
-                            converter.readJsonConvertToXmlAndWrite(path, outputPath);
+                            converter.readJsonConvertToXmlAndWrite(path, getOutputPath());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -46,7 +45,11 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
     }
 
     private boolean matchPattern(String path) {
-        return path.substring(path.lastIndexOf("/") + 1).contains(fileNamePattern);
+        return path.substring(path.lastIndexOf("/") + 1).contains(getFileNamePattern());
+    }
+
+    public LocalDateTime getTimeNow() {
+        return timeNow;
     }
 
 }

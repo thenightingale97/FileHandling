@@ -17,12 +17,8 @@ public class Launcher extends Application<FileHandlerConfiguration> {
 
     @Override
     public void run(FileHandlerConfiguration configuration, Environment environment) {
-        Injector guice = Guice.createInjector(new FileServiceBinderModule());
+        Injector guice = Guice.createInjector(new FileServiceBinderModule(configuration));
         ScheduleFileDirectory trackerFileDirectory = guice.getInstance(ScheduleFileDirectory.class);
-        trackerFileDirectory.rootFolder = configuration.getRootFolder();
-        trackerFileDirectory.environment = configuration.getEnvironment();
-        trackerFileDirectory.outputPath = configuration.getOutputPath();
-        trackerFileDirectory.fileNamePattern = configuration.getFileNamePattern();
         environment.lifecycle().scheduledExecutorService("scheduledTracker")
                 .build()
                 .schedule((Runnable) trackerFileDirectory::goThroughToCheckFile, Long.parseLong(configuration.getTimeInterval()), TimeUnit.MINUTES);
