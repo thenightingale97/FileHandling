@@ -21,6 +21,8 @@ public class FileHandlerConfiguration extends Configuration {
     @NotEmpty
     private String timeInterval;
 
+    private String healthCheckConectionUrl;
+
     @JsonProperty
     public String getEnvironment() {
         return environment;
@@ -69,5 +71,15 @@ public class FileHandlerConfiguration extends Configuration {
     @JsonProperty
     public void setTimeInterval(String timeInterval) {
         this.timeInterval = timeInterval;
+    }
+
+    @JsonProperty
+    public String getHealthCheckConectionUrl() {
+        return healthCheckConectionUrl;
+    }
+    
+    @JsonProperty
+    public void setHealthCheckConectionUrl(String healthCheckConectionUrl) {
+        this.healthCheckConectionUrl = healthCheckConectionUrl;
     }
 }

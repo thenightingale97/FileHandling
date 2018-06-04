@@ -25,7 +25,7 @@ public class Launcher extends Application<FileHandlerConfiguration> {
         environment.lifecycle().scheduledExecutorService("scheduledTracker")
                 .build()
                 .schedule((Runnable) trackerFileDirectory::goThroughToCheckFile, Long.parseLong(configuration.getTimeInterval()), TimeUnit.MINUTES);
-        environment.healthChecks().register("Internet connection check", new InternetConnectionHealthCheck());
+        environment.healthChecks().register("Internet connection check", guice.getInstance(InternetConnectionHealthCheck.class));
         environment.healthChecks().runHealthChecks();
     }
 }

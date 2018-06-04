@@ -4,6 +4,7 @@ import com.google.inject.*;
 import filemanager.configuration.FileHandlerConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.directorytracker.TrackerFileDirectory;
+import filemanager.healthchecks.InternetConnectionHealthCheck;
 import filemanager.resource.ClientResource;
 import filemanager.service.ConverterFromJsonToXmlService;
 import filemanager.service.JsonReader;
@@ -42,5 +43,12 @@ public class FileServiceBinderModule extends AbstractModule {
     public ClientResource getClient(ScheduleFileDirectory scheduleFileDirectory) {
         ClientResource clientResource = new ClientResource(scheduleFileDirectory);
         return clientResource;
+    }
+
+    @Provides
+    public InternetConnectionHealthCheck getConnectionHealthCheck() {
+        InternetConnectionHealthCheck connectionHealthCheck = new InternetConnectionHealthCheck();
+        connectionHealthCheck.setConnectionCheckUrl(configuration.getHealthCheckConectionUrl());
+        return connectionHealthCheck;
     }
 }
