@@ -1,6 +1,7 @@
 package filemanager.directorytracker;
 
 import com.google.inject.Inject;
+import filemanager.model.Command;
 import filemanager.service.ConverterFromJsonToXmlService;
 
 import java.io.IOException;
@@ -65,6 +66,11 @@ public class WatchFileDirectory extends TrackerFileDirectory {
 
     @Override
     public void goThroughToCheckFile(LocalDateTime time) {
+
+    }
+
+    @Override
+    public void goThroughToCheckFile(Command command) {
 
     }
 

@@ -1,6 +1,7 @@
 package filemanager.serviceImpl;
 
 import com.google.inject.Inject;
+import filemanager.model.Command;
 import filemanager.model.Interaction;
 import filemanager.service.ConverterFromJsonToXmlService;
 import filemanager.service.JsonReader;
@@ -28,6 +29,16 @@ public class ConverterFromJsonToXmlServiceImpl implements ConverterFromJsonToXml
         String client = interaction.getClientName();
         String temporaryPath = to + client;
         writer.writeXmlFile(interaction, temporaryPath);
+    }
+
+    @Override
+    public void readJsonConvertToXmlAndWrite(Path from, String to, Command command) throws IOException {
+        Interaction interaction = reader.readJson(new FileInputStream(String.valueOf(from)));
+        if (command.getClient().equalsIgnoreCase(interaction.getClientName())) {
+            String client = interaction.getClientName();
+            String temporaryPath = to + client;
+            writer.writeXmlFile(interaction, temporaryPath);
+        }
     }
 
 }

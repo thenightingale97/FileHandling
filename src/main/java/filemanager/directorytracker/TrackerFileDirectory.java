@@ -1,5 +1,7 @@
 package filemanager.directorytracker;
 
+import filemanager.model.Command;
+
 import java.time.LocalDateTime;
 
 public abstract class TrackerFileDirectory {
@@ -13,6 +15,8 @@ public abstract class TrackerFileDirectory {
     abstract public void goThroughToCheckFile();
 
     abstract public void goThroughToCheckFile(LocalDateTime time);
+
+    abstract public void goThroughToCheckFile(Command command);
 
     public String getRootFolder() {
         return rootFolder;

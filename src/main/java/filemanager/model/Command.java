@@ -8,6 +8,8 @@ public class Command {
     @NotEmpty
     private String date;
 
+    private String client;
+
     @JsonProperty
     public String getDate() {
         return date;
@@ -18,10 +20,21 @@ public class Command {
         this.date = date;
     }
 
+    @JsonProperty
+    public String getClient() {
+        return client;
+    }
+
+    @JsonProperty
+    public void setClient(String client) {
+        this.client = client;
+    }
+
     @Override
     public String toString() {
         return "Command{" +
                 "date='" + date + '\'' +
+                ", client='" + client + '\'' +
                 '}';
     }
 }
