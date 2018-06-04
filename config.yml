@@ -3,6 +3,7 @@ rootFolder: /home/ykato/Documents/bvpixel/
 outputPath: /home/ykato/Documents/clients/
 fileNamePattern: PPConversion
 timeInterval: 1
+healthCheckConectionUrl: https://www.pravda.com.ua/
 server:
   applicationConnectors:
   - type: http
