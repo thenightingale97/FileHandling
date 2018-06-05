@@ -10,6 +10,7 @@ import filemanager.service.XmlWriter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public class ConverterFromJsonToXmlServiceImpl implements ConverterFromJsonToXmlService {
 
@@ -25,20 +26,32 @@ public class ConverterFromJsonToXmlServiceImpl implements ConverterFromJsonToXml
 
     @Override
     public void readJsonConvertToXmlAndWrite(Path from, String to) throws IOException {
-        Interaction interaction = reader.readJson(new FileInputStream(String.valueOf(from)));
-        String client = interaction.getClientName();
-        String temporaryPath = to + client;
-        writer.writeXmlFile(interaction, temporaryPath);
+        List<Interaction> interactions = reader.readJson(new FileInputStream(String.valueOf(from)));
+        interactions.forEach((interaction) -> {
+            String client = interaction.getClientName();
+            String temporaryPath = to + client;
+            try {
+                writer.writeXmlFile(interaction, temporaryPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
     public void readJsonConvertToXmlAndWrite(Path from, String to, Command command) throws IOException {
-        Interaction interaction = reader.readJson(new FileInputStream(String.valueOf(from)));
-        if (command.getClient().equalsIgnoreCase(interaction.getClientName())) {
-            String client = interaction.getClientName();
-            String temporaryPath = to + client;
-            writer.writeXmlFile(interaction, temporaryPath);
-        }
+        List<Interaction> interactions = reader.readJson(new FileInputStream(String.valueOf(from)));
+        interactions.forEach((interaction) -> {
+            if (interaction.getClientName().equalsIgnoreCase(command.getClient())) {
+                String client = interaction.getClientName();
+                String temporaryPath = to + client;
+                try {
+                    writer.writeXmlFile(interaction, temporaryPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 }
