@@ -2,20 +2,37 @@ package filemanager.directorytracker;
 
 import com.google.inject.Inject;
 import filemanager.model.Command;
-import filemanager.service.ConverterFromJsonToXmlService;
+import filemanager.model.Interaction;
+import filemanager.service.InteractionGroupService;
+import filemanager.service.JsonReadService;
+import filemanager.service.XmlWriteService;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ScheduleFileDirectory extends TrackerFileDirectory {
 
-    private ConverterFromJsonToXmlService converter;
+    private JsonReadService readService;
+
+    private InteractionGroupService groupService;
+
+    private XmlWriteService writeService;
+
+    private HashMap<String, List<Interaction>> interactionsMap;
+
+    private List<Interaction> interactions;
 
     @Inject
-    public ScheduleFileDirectory(ConverterFromJsonToXmlService converter) {
-        this.converter = converter;
+    public ScheduleFileDirectory(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
+        this.readService = readService;
+        this.groupService = groupService;
+        this.writeService = writeService;
     }
 
     @Override
@@ -25,6 +42,8 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     @Override
     public void goThroughToCheckFile(LocalDateTime time) {
+        interactionsMap = new HashMap<>();
+        interactions = new ArrayList<>();
         try {
             Files.walk(Paths.get(getRootFolder() + getEnvironment() + "/" +
                     time.getYear() + "/" +
@@ -34,7 +53,7 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
                     .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                     .forEach(path -> {
                         try {
-                            converter.readJsonConvertToXmlAndWrite(path, getOutputPath());
+                            readService.readJson(new FileInputStream(path.toString()), interactions);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -42,10 +61,22 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        groupService.groupByClient(interactions, interactionsMap);
+        interactionsMap.forEach((clientName, interactions1) -> {
+            String temporaryPath = getOutputPath() + clientName;
+            try {
+                writeService.writeXmlFile(interactions1, temporaryPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
     }
 
     @Override
     public void goThroughToCheckFile(Command command) {
+        interactionsMap = new HashMap<>();
+        interactions = new ArrayList<>();
         String time = command.getDate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
         LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
@@ -58,19 +89,25 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
                     .filter((file) -> Files.isRegularFile(file) && matchPattern(file.toString()))
                     .forEach(path -> {
                         try {
-                            if (command.getClient().isEmpty()) {
-                                converter.readJsonConvertToXmlAndWrite(path, getOutputPath());
-                            } else {
-                                converter.readJsonConvertToXmlAndWrite(path, getOutputPath(), command);
-                            }
+                            readService.readJson(new FileInputStream(path.toString()), interactions);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     });
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+        groupService.groupByClient(interactions, interactionsMap);
+        interactionsMap.forEach((clientName, interactionList) -> {
+            if (clientName.equalsIgnoreCase(command.getClient())) {
+                String temporaryPath = getOutputPath() + clientName;
+                try {
+                    writeService.writeXmlFile(interactionList, temporaryPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 

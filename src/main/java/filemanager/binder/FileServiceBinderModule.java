@@ -7,11 +7,13 @@ import filemanager.directorytracker.TrackerFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
 import filemanager.resource.ClientResource;
 import filemanager.service.ConverterFromJsonToXmlService;
-import filemanager.service.JsonReader;
-import filemanager.service.XmlWriter;
+import filemanager.service.InteractionGroupService;
+import filemanager.service.JsonReadService;
+import filemanager.service.XmlWriteService;
 import filemanager.serviceImpl.ConverterFromJsonToXmlServiceImpl;
-import filemanager.serviceImpl.JsonReaderImpl;
-import filemanager.serviceImpl.XmlWriterImpl;
+import filemanager.serviceImpl.InteractionGroupServiceImpl;
+import filemanager.serviceImpl.JsonReadServiceImpl;
+import filemanager.serviceImpl.XmlWriteServiceImpl;
 
 public class FileServiceBinderModule extends AbstractModule {
 
@@ -25,13 +27,14 @@ public class FileServiceBinderModule extends AbstractModule {
     protected void configure() {
         bind(TrackerFileDirectory.class).to(ScheduleFileDirectory.class);
         bind(ConverterFromJsonToXmlService.class).to(ConverterFromJsonToXmlServiceImpl.class);
-        bind(JsonReader.class).to(JsonReaderImpl.class);
-        bind(XmlWriter.class).to(XmlWriterImpl.class);
+        bind(InteractionGroupService.class).to(InteractionGroupServiceImpl.class);
+        bind(JsonReadService.class).to(JsonReadServiceImpl.class);
+        bind(XmlWriteService.class).to(XmlWriteServiceImpl.class);
     }
 
     @Provides
-    public ScheduleFileDirectory provideConfigurationFields(ConverterFromJsonToXmlService service) {
-        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(service);
+    public ScheduleFileDirectory provideConfigurationFields(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
+        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService);
         fileDirectory.setEnvironment(configuration.getEnvironment());
         fileDirectory.setFileNamePattern(configuration.getFileNamePattern());
         fileDirectory.setOutputPath(configuration.getOutputPath());
