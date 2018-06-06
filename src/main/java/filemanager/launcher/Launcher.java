@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import filemanager.binder.FileServiceBinderModule;
 import filemanager.configuration.FileHandlerConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
+import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
 import filemanager.resource.ClientResource;
 import io.dropwizard.Application;

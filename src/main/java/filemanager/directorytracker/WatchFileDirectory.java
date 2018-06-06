@@ -1,14 +1,18 @@
 package filemanager.directorytracker;
 
 import com.google.inject.Inject;
-import filemanager.model.Command;
-import filemanager.service.ConverterFromJsonToXmlService;
+import filemanager.model.Interaction;
+import filemanager.service.InteractionGroupService;
+import filemanager.service.JsonReadService;
+import filemanager.service.XmlWriteService;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -19,11 +23,21 @@ public class WatchFileDirectory extends TrackerFileDirectory {
     private WatchService watchService;
     private Map<WatchKey, Path> watchKeys;
 
-    private ConverterFromJsonToXmlService converter;
+    private JsonReadService readService;
+
+    private InteractionGroupService groupService;
+
+    private XmlWriteService writeService;
+
+    private HashMap<String, List<Interaction>> interactionsMap;
+
+    private List<Interaction> interactions;
 
     @Inject
-    public WatchFileDirectory(ConverterFromJsonToXmlService converter) {
-        this.converter = converter;
+    public WatchFileDirectory(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
+        this.readService = readService;
+        this.groupService = groupService;
+        this.writeService = writeService;
         this.watchKeys = new HashMap<>();
         try {
             this.watchService = FileSystems.getDefault().newWatchService();
@@ -32,7 +46,6 @@ public class WatchFileDirectory extends TrackerFileDirectory {
         }
     }
 
-    @Override
     public void goThroughToCheckFile() {
         try {
             registerAll(Paths.get(getRootFolder() + getEnvironment()));
@@ -64,16 +77,6 @@ public class WatchFileDirectory extends TrackerFileDirectory {
         }
     }
 
-    @Override
-    public void goThroughToCheckFile(LocalDateTime time) {
-
-    }
-
-    @Override
-    public void goThroughToCheckFile(Command command) {
-
-    }
-
     private void register(Path dir) throws IOException {
         WatchKey watchKey = dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
         watchKeys.put(watchKey, dir);
@@ -91,6 +94,8 @@ public class WatchFileDirectory extends TrackerFileDirectory {
     }
 
     private void watchForEvents(WatchKey key, Path dir) {
+        interactions = new ArrayList<>();
+        interactionsMap = new HashMap<>();
         for (WatchEvent<?> event : key.pollEvents()) {
             WatchEvent<Path> watchEvent = (WatchEvent<Path>) event;
             Path name = watchEvent.context();
@@ -101,7 +106,7 @@ public class WatchFileDirectory extends TrackerFileDirectory {
                         .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                         .forEach(file -> {
                             try {
-                                converter.readJsonConvertToXmlAndWrite(file, getOutputPath());
+                                readService.readJson(new FileInputStream(file.toString()), interactions);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -109,6 +114,15 @@ public class WatchFileDirectory extends TrackerFileDirectory {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            groupService.groupByClient(interactions, interactionsMap);
+            interactionsMap.forEach((clientName, interactionList) -> {
+                String temporaryPath = getOutputPath() + clientName;
+                try {
+                    writeService.writeXmlFile(interactionList, temporaryPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
 
             try {
                 if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
@@ -120,7 +134,7 @@ public class WatchFileDirectory extends TrackerFileDirectory {
         }
     }
 
-    public boolean matchPattern(String path) {
+    private boolean matchPattern(String path) {
         return path.substring(path.lastIndexOf("/") + 1).contains(getFileNamePattern());
     }
 

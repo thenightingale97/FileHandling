@@ -3,14 +3,12 @@ package filemanager.binder;
 import com.google.inject.*;
 import filemanager.configuration.FileHandlerConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
-import filemanager.directorytracker.TrackerFileDirectory;
+import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
 import filemanager.resource.ClientResource;
-import filemanager.service.ConverterFromJsonToXmlService;
 import filemanager.service.InteractionGroupService;
 import filemanager.service.JsonReadService;
 import filemanager.service.XmlWriteService;
-import filemanager.serviceImpl.ConverterFromJsonToXmlServiceImpl;
 import filemanager.serviceImpl.InteractionGroupServiceImpl;
 import filemanager.serviceImpl.JsonReadServiceImpl;
 import filemanager.serviceImpl.XmlWriteServiceImpl;
@@ -25,8 +23,6 @@ public class FileServiceBinderModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(TrackerFileDirectory.class).to(ScheduleFileDirectory.class);
-        bind(ConverterFromJsonToXmlService.class).to(ConverterFromJsonToXmlServiceImpl.class);
         bind(InteractionGroupService.class).to(InteractionGroupServiceImpl.class);
         bind(JsonReadService.class).to(JsonReadServiceImpl.class);
         bind(XmlWriteService.class).to(XmlWriteServiceImpl.class);
@@ -41,6 +37,17 @@ public class FileServiceBinderModule extends AbstractModule {
         fileDirectory.setRootFolder(configuration.getRootFolder());
         return fileDirectory;
     }
+
+    @Provides
+    public WatchFileDirectory provideConfigurationFields2(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
+        WatchFileDirectory fileDirectory = new WatchFileDirectory(readService, groupService, writeService);
+        fileDirectory.setEnvironment(configuration.getEnvironment());
+        fileDirectory.setFileNamePattern(configuration.getFileNamePattern());
+        fileDirectory.setOutputPath(configuration.getOutputPath());
+        fileDirectory.setRootFolder(configuration.getRootFolder());
+        return fileDirectory;
+    }
+
 
     @Provides
     public ClientResource getClient(ScheduleFileDirectory scheduleFileDirectory) {

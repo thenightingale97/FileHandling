@@ -35,79 +35,83 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
         this.writeService = writeService;
     }
 
-    @Override
     public void goThroughToCheckFile() {
         this.goThroughToCheckFile(LocalDateTime.now());
     }
 
-    @Override
     public void goThroughToCheckFile(LocalDateTime time) {
         interactionsMap = new HashMap<>();
         interactions = new ArrayList<>();
-        try {
-            Files.walk(Paths.get(getRootFolder() + getEnvironment() + "/" +
-                    time.getYear() + "/" +
-                    time.getMonthValue() + "/" +
-                    time.getDayOfMonth() + "/" +
-                    time.getHour()), FileVisitOption.FOLLOW_LINKS)
-                    .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
-                    .forEach(path -> {
-                        try {
-                            readService.readJson(new FileInputStream(path.toString()), interactions);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        groupService.groupByClient(interactions, interactionsMap);
-        interactionsMap.forEach((clientName, interactions1) -> {
-            String temporaryPath = getOutputPath() + clientName;
+        Path allPath = Paths.get(getRootFolder() + getEnvironment() + "/" +
+                time.getYear() + "/" +
+                time.getMonthValue() + "/" +
+                time.getDayOfMonth() + "/" +
+                time.getHour());
+        if (Files.exists(allPath)) {
             try {
-                writeService.writeXmlFile(interactions1, temporaryPath);
+                Files.walk(allPath, FileVisitOption.FOLLOW_LINKS)
+                        .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
+                        .forEach(path -> {
+                            try {
+                                readService.readJson(new FileInputStream(path.toString()), interactions);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            groupService.groupByClient(interactions, interactionsMap);
+            interactionsMap.forEach((clientName, interactions1) -> {
+                String temporaryPath = getOutputPath() + clientName;
+                try {
+                    writeService.writeXmlFile(interactions1, temporaryPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-        });
+            });
+        }
     }
 
-    @Override
     public void goThroughToCheckFile(Command command) {
         interactionsMap = new HashMap<>();
         interactions = new ArrayList<>();
         String time = command.getDate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
         LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
-        try {
-            Files.walk(Paths.get(getRootFolder() + getEnvironment() + "/" +
-                    dateTime.getYear() + "/" +
-                    dateTime.getMonthValue() + "/" +
-                    dateTime.getDayOfMonth() + "/" +
-                    dateTime.getHour()), FileVisitOption.FOLLOW_LINKS)
-                    .filter((file) -> Files.isRegularFile(file) && matchPattern(file.toString()))
-                    .forEach(path -> {
-                        try {
-                            readService.readJson(new FileInputStream(path.toString()), interactions);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        groupService.groupByClient(interactions, interactionsMap);
-        interactionsMap.forEach((clientName, interactionList) -> {
-            if (clientName.equalsIgnoreCase(command.getClient())) {
-                String temporaryPath = getOutputPath() + clientName;
-                try {
-                    writeService.writeXmlFile(interactionList, temporaryPath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        Path allPath = Paths.get(getRootFolder() + getEnvironment() + "/" +
+                dateTime.getYear() + "/" +
+                dateTime.getMonthValue() + "/" +
+                dateTime.getDayOfMonth() + "/" +
+                dateTime.getHour());
+        if (Files.exists(allPath)) {
+            try {
+                Files.walk(allPath, FileVisitOption.FOLLOW_LINKS)
+                        .filter((file) -> Files.isRegularFile(file) && matchPattern(file.toString()))
+                        .forEach(path -> {
+                            try {
+                                readService.readJson(new FileInputStream(path.toString()), interactions);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+
+            groupService.groupByClient(interactions, interactionsMap);
+            interactionsMap.forEach((clientName, interactionList) -> {
+                if (clientName.equalsIgnoreCase(command.getClient())) {
+                    String temporaryPath = getOutputPath() + clientName;
+                    try {
+                        writeService.writeXmlFile(interactionList, temporaryPath);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
 
