@@ -12,8 +12,7 @@ import java.util.List;
 @Singleton
 public class JsonReadServiceImpl implements JsonReadService {
     @Override
-    public List<Interaction> readJson(InputStream stream, List<Interaction> interactions) throws IOException {/*
-        List<Interaction> interactions = new ArrayList<>();*/
+    public List<Interaction> readJson(InputStream stream, List<Interaction> interactions) throws IOException {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(stream))) {
             String line;
             while ((line = br.readLine()) != null) {
