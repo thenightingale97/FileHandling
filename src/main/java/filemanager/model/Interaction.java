@@ -7,19 +7,18 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import java.util.ArrayList;
 
-@JacksonXmlRootElement
 public class Interaction {
 
     @JsonProperty("client")
-    @JacksonXmlProperty(localName = "ClientName")
+    @JacksonXmlProperty(localName = "UserName")
     private String clientName;
 
     @JsonProperty("Dt")
-    @JacksonXmlProperty(localName = "TransactionTime")
+    @JacksonXmlProperty(localName = "TransactionDate")
     private String transactionTime;
 
     @JsonProperty("email")
-    @JacksonXmlProperty(localName = "Email")
+    @JacksonXmlProperty(localName = "EmailAddress")
     private String email;
 
     @JsonProperty("items")
