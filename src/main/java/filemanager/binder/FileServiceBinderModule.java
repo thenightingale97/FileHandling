@@ -1,10 +1,7 @@
 package filemanager.binder;
 
 import com.google.inject.*;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
 import filemanager.configuration.FileHandlerConfiguration;
-import filemanager.dao.JobDao;
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
@@ -15,8 +12,6 @@ import filemanager.service.XmlWriteService;
 import filemanager.serviceImpl.InteractionGroupServiceImpl;
 import filemanager.serviceImpl.JsonReadServiceImpl;
 import filemanager.serviceImpl.XmlWriteServiceImpl;
-
-import java.net.UnknownHostException;
 
 public class FileServiceBinderModule extends AbstractModule {
 
