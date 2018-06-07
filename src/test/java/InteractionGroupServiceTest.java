@@ -1,7 +1,7 @@
 import com.google.inject.Inject;
 import filemanager.model.Interaction;
 import filemanager.service.InteractionGroupService;
-import filemanager.serviceImpl.InteractionGroupServiceImpl;
+import filemanager.service.impl.InteractionGroupServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +40,7 @@ public class InteractionGroupServiceTest {
         testValue.add(interaction2);
         testValue.add(interaction3);
 
-        HashMap<String, List<Interaction>> hashMap = new HashMap<>();
-        groupService.groupByClient(testValue, hashMap);
+        HashMap<String, List<Interaction>> hashMap = new HashMap<>(groupService.groupByClient(testValue));
 
         assertEquals(2, hashMap.keySet().size());
     }
@@ -49,8 +48,7 @@ public class InteractionGroupServiceTest {
     @Test
     public void groupByClientEmptyList() {
         List<Interaction> testValue = new ArrayList<>();
-        HashMap<String, List<Interaction>> hashMap = new HashMap<>();
-        groupService.groupByClient(testValue, hashMap);
+        HashMap<String, List<Interaction>> hashMap = new HashMap<>(groupService.groupByClient(testValue));
 
         assertEquals(0, hashMap.size());
     }

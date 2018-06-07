@@ -1,17 +1,21 @@
 package filemanager.binder;
 
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import filemanager.configuration.FileHandlerConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
+import filemanager.model.Command;
 import filemanager.resource.ClientResource;
 import filemanager.service.InteractionGroupService;
 import filemanager.service.JsonReadService;
 import filemanager.service.XmlWriteService;
-import filemanager.serviceImpl.InteractionGroupServiceImpl;
-import filemanager.serviceImpl.JsonReadServiceImpl;
-import filemanager.serviceImpl.XmlWriteServiceImpl;
+import filemanager.service.impl.InteractionGroupServiceImpl;
+import filemanager.service.impl.JsonReadServiceImpl;
+import filemanager.service.impl.XmlWriteServiceImpl;
+
+import java.time.LocalDateTime;
 
 public class FileServiceBinderModule extends AbstractModule {
 
@@ -59,5 +63,12 @@ public class FileServiceBinderModule extends AbstractModule {
         InternetConnectionHealthCheck connectionHealthCheck = new InternetConnectionHealthCheck();
         connectionHealthCheck.setConnectionCheckUrl(configuration.getHealthCheckConectionUrl());
         return connectionHealthCheck;
+    }
+
+    @Provides
+    public Command providesCommand() {
+        Command command = new Command();
+        command.setDate(LocalDateTime.now());
+        return command;
     }
 }

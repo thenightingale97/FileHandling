@@ -1,4 +1,4 @@
-package filemanager.serviceImpl;
+package filemanager.service.impl;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Singleton;

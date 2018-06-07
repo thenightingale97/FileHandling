@@ -9,9 +9,11 @@ import filemanager.service.XmlWriteService;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,26 +37,16 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
         this.writeService = writeService;
     }
 
-    public void goThroughToCheckFile() {
-        Command command = new Command();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
-        String dateStr = LocalDateTime.now().format(formatter);
-        command.setDate(dateStr);
-        this.goThroughToCheckFile(command);
-    }
-
     public void goThroughToCheckFile(Command command) {
         interactionsMap = new HashMap<>();
         interactions = new ArrayList<>();
-        String time = command.getDate();
+        LocalDateTime time = command.getDate();
         String commandClientName = command.getClient();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
-        LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
         Path allPath = Paths.get(getRootFolder() + getEnvironment() + "/" +
-                dateTime.getYear() + "/" +
-                dateTime.getMonthValue() + "/" +
-                dateTime.getDayOfMonth() + "/" +
-                dateTime.getHour());
+                time.getYear() + "/" +
+                time.getMonthValue() + "/" +
+                time.getDayOfMonth() + "/" +
+                time.getHour());
         if (Files.exists(allPath)) {
             try {
                 Files.walk(allPath, FileVisitOption.FOLLOW_LINKS)
@@ -69,33 +61,22 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            groupService.groupByClient(interactions, interactionsMap);
-            if (commandClientName == null || commandClientName.isEmpty()) {
-                interactionsMap.forEach((clientName, interactionList) -> {
+            interactionsMap.putAll(groupService.groupByClient(interactions));
+            interactionsMap.forEach((clientName, interactionList) -> {
+                if (clientName.equalsIgnoreCase(commandClientName) || commandClientName == null || commandClientName.isEmpty()) {
                     String temporaryPath = getOutputPath() + clientName;
                     try {
                         writeService.writeXmlFile(interactionList, temporaryPath);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                });
-            } else {
-                interactionsMap.forEach((clientName, interactionList) -> {
-                    if (clientName.equalsIgnoreCase(commandClientName)) {
-                        String temporaryPath = getOutputPath() + clientName;
-                        try {
-                            writeService.writeXmlFile(interactionList, temporaryPath);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
+                }
+
+            });
         }
     }
 
     private boolean matchPattern(String path) {
         return path.substring(path.lastIndexOf("/") + 1).contains(getFileNamePattern());
     }
-
 }

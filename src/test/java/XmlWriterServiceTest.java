@@ -1,15 +1,14 @@
 import com.google.inject.Inject;
 import filemanager.service.XmlWriteService;
-import filemanager.serviceImpl.XmlWriteServiceImpl;
+import filemanager.service.impl.XmlWriteServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
-
 import java.nio.file.FileAlreadyExistsException;
 import java.time.LocalDateTime;
+
+import static org.junit.Assert.assertEquals;
 
 public class XmlWriterServiceTest {
 

@@ -3,7 +3,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.google.inject.Inject;
 import filemanager.model.Interaction;
 import filemanager.service.JsonReadService;
-import filemanager.serviceImpl.JsonReadServiceImpl;
+import filemanager.service.impl.JsonReadServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

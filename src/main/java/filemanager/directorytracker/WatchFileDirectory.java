@@ -114,7 +114,7 @@ public class WatchFileDirectory extends TrackerFileDirectory {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            groupService.groupByClient(interactions, interactionsMap);
+            interactionsMap.putAll(groupService.groupByClient(interactions));
             interactionsMap.forEach((clientName, interactionList) -> {
                 String temporaryPath = getOutputPath() + clientName;
                 try {

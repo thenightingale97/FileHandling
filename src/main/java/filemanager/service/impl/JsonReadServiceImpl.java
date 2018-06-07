@@ -1,4 +1,4 @@
-package filemanager.serviceImpl;
+package filemanager.service.impl;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
