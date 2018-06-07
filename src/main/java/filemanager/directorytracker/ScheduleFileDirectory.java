@@ -36,48 +36,18 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
     }
 
     public void goThroughToCheckFile() {
-        this.goThroughToCheckFile(LocalDateTime.now());
-    }
-
-    public void goThroughToCheckFile(LocalDateTime time) {
-        interactionsMap = new HashMap<>();
-        interactions = new ArrayList<>();
-        Path allPath = Paths.get(getRootFolder() + getEnvironment() + "/" +
-                time.getYear() + "/" +
-                time.getMonthValue() + "/" +
-                time.getDayOfMonth() + "/" +
-                time.getHour());
-        if (Files.exists(allPath)) {
-            try {
-                Files.walk(allPath, FileVisitOption.FOLLOW_LINKS)
-                        .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
-                        .forEach(path -> {
-                            try {
-                                readService.readJson(new FileInputStream(path.toString()), interactions);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            groupService.groupByClient(interactions, interactionsMap);
-            interactionsMap.forEach((clientName, interactions1) -> {
-                String temporaryPath = getOutputPath() + clientName;
-                try {
-                    writeService.writeXmlFile(interactions1, temporaryPath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            });
-        }
+        Command command = new Command();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
+        String dateStr = LocalDateTime.now().format(formatter);
+        command.setDate(dateStr);
+        this.goThroughToCheckFile(command);
     }
 
     public void goThroughToCheckFile(Command command) {
         interactionsMap = new HashMap<>();
         interactions = new ArrayList<>();
         String time = command.getDate();
+        String commandClientName = command.getClient();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
         LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
         Path allPath = Paths.get(getRootFolder() + getEnvironment() + "/" +
@@ -91,7 +61,7 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
                         .filter((file) -> Files.isRegularFile(file) && matchPattern(file.toString()))
                         .forEach(path -> {
                             try {
-                                readService.readJson(new FileInputStream(path.toString()), interactions);
+                                interactions.addAll(readService.readJson(new FileInputStream(path.toString())));
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -99,21 +69,30 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             groupService.groupByClient(interactions, interactionsMap);
-            interactionsMap.forEach((clientName, interactionList) -> {
-                if (clientName.equalsIgnoreCase(command.getClient())) {
+            if (commandClientName == null || commandClientName.isEmpty()) {
+                interactionsMap.forEach((clientName, interactionList) -> {
                     String temporaryPath = getOutputPath() + clientName;
                     try {
                         writeService.writeXmlFile(interactionList, temporaryPath);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
-            });
+                });
+            } else {
+                interactionsMap.forEach((clientName, interactionList) -> {
+                    if (clientName.equalsIgnoreCase(commandClientName)) {
+                        String temporaryPath = getOutputPath() + clientName;
+                        try {
+                            writeService.writeXmlFile(interactionList, temporaryPath);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
         }
     }
-
 
     private boolean matchPattern(String path) {
         return path.substring(path.lastIndexOf("/") + 1).contains(getFileNamePattern());

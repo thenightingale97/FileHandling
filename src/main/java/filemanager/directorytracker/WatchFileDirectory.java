@@ -106,7 +106,7 @@ public class WatchFileDirectory extends TrackerFileDirectory {
                         .filter(file -> Files.isRegularFile(file) && matchPattern(file.toString()))
                         .forEach(file -> {
                             try {
-                                readService.readJson(new FileInputStream(file.toString()), interactions);
+                                interactions.addAll(readService.readJson(new FileInputStream(file.toString())));
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

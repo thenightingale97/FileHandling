@@ -1,7 +1,10 @@
 package filemanager.binder;
 
 import com.google.inject.*;
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
 import filemanager.configuration.FileHandlerConfiguration;
+import filemanager.dao.JobDao;
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
@@ -12,6 +15,8 @@ import filemanager.service.XmlWriteService;
 import filemanager.serviceImpl.InteractionGroupServiceImpl;
 import filemanager.serviceImpl.JsonReadServiceImpl;
 import filemanager.serviceImpl.XmlWriteServiceImpl;
+
+import java.net.UnknownHostException;
 
 public class FileServiceBinderModule extends AbstractModule {
 
@@ -29,7 +34,7 @@ public class FileServiceBinderModule extends AbstractModule {
     }
 
     @Provides
-    public ScheduleFileDirectory provideConfigurationFields(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
+    public ScheduleFileDirectory provideScheduleFileDirectory(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
         ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService);
         fileDirectory.setEnvironment(configuration.getEnvironment());
         fileDirectory.setFileNamePattern(configuration.getFileNamePattern());
@@ -39,7 +44,7 @@ public class FileServiceBinderModule extends AbstractModule {
     }
 
     @Provides
-    public WatchFileDirectory provideConfigurationFields2(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
+    public WatchFileDirectory provideWatchFileDirectory(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
         WatchFileDirectory fileDirectory = new WatchFileDirectory(readService, groupService, writeService);
         fileDirectory.setEnvironment(configuration.getEnvironment());
         fileDirectory.setFileNamePattern(configuration.getFileNamePattern());
@@ -48,15 +53,14 @@ public class FileServiceBinderModule extends AbstractModule {
         return fileDirectory;
     }
 
-
     @Provides
-    public ClientResource getClient(ScheduleFileDirectory scheduleFileDirectory) {
+    public ClientResource provideClientResource(ScheduleFileDirectory scheduleFileDirectory) {
         ClientResource clientResource = new ClientResource(scheduleFileDirectory);
         return clientResource;
     }
 
     @Provides
-    public InternetConnectionHealthCheck getConnectionHealthCheck() {
+    public InternetConnectionHealthCheck provideConnectionHealthCheck() {
         InternetConnectionHealthCheck connectionHealthCheck = new InternetConnectionHealthCheck();
         connectionHealthCheck.setConnectionCheckUrl(configuration.getHealthCheckConectionUrl());
         return connectionHealthCheck;
