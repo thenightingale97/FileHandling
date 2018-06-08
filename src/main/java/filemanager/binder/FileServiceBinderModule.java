@@ -2,23 +2,27 @@ package filemanager.binder;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import filemanager.configuration.FileHandlerConfiguration;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
+import filemanager.configuration.ApplicationConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
 import filemanager.resource.ClientResource;
 import filemanager.service.InteractionGroupService;
+import filemanager.service.JobWriterService;
 import filemanager.service.JsonReadService;
 import filemanager.service.XmlWriteService;
 import filemanager.service.impl.InteractionGroupServiceImpl;
+import filemanager.service.impl.JobWriterServiceImpl;
 import filemanager.service.impl.JsonReadServiceImpl;
 import filemanager.service.impl.XmlWriteServiceImpl;
 
 public class FileServiceBinderModule extends AbstractModule {
 
-    private FileHandlerConfiguration configuration;
+    private ApplicationConfiguration configuration;
 
-    public FileServiceBinderModule(FileHandlerConfiguration configuration) {
+    public FileServiceBinderModule(ApplicationConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -32,22 +36,23 @@ public class FileServiceBinderModule extends AbstractModule {
     @Provides
     public ScheduleFileDirectory provideScheduleFileDirectory(JsonReadService readService,
                                                               InteractionGroupService groupService,
-                                                              XmlWriteService writeService) {
-        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService);
-        fileDirectory.setEnvironment(configuration.getEnvironment());
-        fileDirectory.setFileNamePattern(configuration.getFileNamePattern());
-        fileDirectory.setOutputPath(configuration.getOutputPath());
-        fileDirectory.setRootFolder(configuration.getRootFolder());
+                                                              XmlWriteService writeService,
+                                                              JobWriterService jobWriterService) {
+        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService, jobWriterService);
+        fileDirectory.setEnvironment(configuration.getEnvironmentConfig().getEnvironment());
+        fileDirectory.setFileNamePattern(configuration.getEnvironmentConfig().getFileNamePattern());
+        fileDirectory.setOutputPath(configuration.getEnvironmentConfig().getOutputPath());
+        fileDirectory.setRootFolder(configuration.getEnvironmentConfig().getRootFolder());
         return fileDirectory;
     }
 
     @Provides
     public WatchFileDirectory provideWatchFileDirectory(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
         WatchFileDirectory fileDirectory = new WatchFileDirectory(readService, groupService, writeService);
-        fileDirectory.setEnvironment(configuration.getEnvironment());
-        fileDirectory.setFileNamePattern(configuration.getFileNamePattern());
-        fileDirectory.setOutputPath(configuration.getOutputPath());
-        fileDirectory.setRootFolder(configuration.getRootFolder());
+        fileDirectory.setEnvironment(configuration.getEnvironmentConfig().getEnvironment());
+        fileDirectory.setFileNamePattern(configuration.getEnvironmentConfig().getFileNamePattern());
+        fileDirectory.setOutputPath(configuration.getEnvironmentConfig().getOutputPath());
+        fileDirectory.setRootFolder(configuration.getEnvironmentConfig().getRootFolder());
         return fileDirectory;
     }
 
@@ -60,8 +65,20 @@ public class FileServiceBinderModule extends AbstractModule {
     @Provides
     public InternetConnectionHealthCheck provideConnectionHealthCheck() {
         InternetConnectionHealthCheck connectionHealthCheck = new InternetConnectionHealthCheck();
-        connectionHealthCheck.setConnectionCheckUrl(configuration.getHealthCheckConectionUrl());
+        connectionHealthCheck.setConnectionCheckUrl(configuration.getEnvironmentConfig().getHealthCheckConectionUrl());
         return connectionHealthCheck;
     }
 
+    @Provides
+    public MongoDatabase provideMongoDb() {
+        MongoClient mongoClient = new MongoClient(configuration.getMongoConfig().getHost(),
+                configuration.getMongoConfig().getPort());
+        return mongoClient.getDatabase(configuration.getMongoConfig().getDatabase());
+    }
+
+    @Provides
+    public JobWriterService provideJobWriterService(MongoDatabase database) {
+        JobWriterService jobWriterService = new JobWriterServiceImpl(database);
+        return jobWriterService;
+    }
 }

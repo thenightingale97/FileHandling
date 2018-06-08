@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import filemanager.model.Command;
 import filemanager.model.Interaction;
 import filemanager.service.InteractionGroupService;
+import filemanager.service.JobWriterService;
 import filemanager.service.JsonReadService;
 import filemanager.service.XmlWriteService;
 
@@ -26,15 +27,21 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     private XmlWriteService writeService;
 
+    private JobWriterService jobWriterService;
+
     private HashMap<String, List<Interaction>> interactionsMap;
 
     private List<Interaction> interactions;
 
     @Inject
-    public ScheduleFileDirectory(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
+    public ScheduleFileDirectory(JsonReadService readService,
+                                 InteractionGroupService groupService,
+                                 XmlWriteService writeService,
+                                 JobWriterService jobWriterService) {
         this.readService = readService;
         this.groupService = groupService;
         this.writeService = writeService;
+        this.jobWriterService = jobWriterService;
     }
 
     public void goThroughToCheckFile(Command command) {
@@ -70,6 +77,7 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    jobWriterService.saveJobInformation(clientName, command);
                 }
 
             });
