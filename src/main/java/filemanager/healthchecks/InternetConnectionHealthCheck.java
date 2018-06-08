@@ -15,7 +15,6 @@ public class InternetConnectionHealthCheck extends HealthCheck {
     @Override
     protected Result check() throws Exception {
         URL url = new URL(connectionCheckUrl);
-        System.out.println(connectionCheckUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         if (connection.getResponseCode() == 200) {
             return Result.healthy();

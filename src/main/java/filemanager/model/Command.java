@@ -1,27 +1,46 @@
 package filemanager.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
+
+import java.time.LocalDateTime;
 
 public class Command {
 
     @NotEmpty
-    private String date;
+    private LocalDateTime date;
+
+    private String client;
 
     @JsonProperty
-    public String getDate() {
+    @JsonFormat(pattern = "yyyy-MM-dd HH")
+    public LocalDateTime getDate() {
         return date;
     }
 
     @JsonProperty
-    public void setDate(String date) {
+    public Command setDate(LocalDateTime date) {
         this.date = date;
+        return this;
+    }
+
+    @JsonProperty
+    public String getClient() {
+        return client;
+    }
+
+    @JsonProperty
+    public Command setClient(String client) {
+        this.client = client;
+        return this;
     }
 
     @Override
     public String toString() {
         return "Command{" +
                 "date='" + date + '\'' +
+                ", client='" + client + '\'' +
                 '}';
     }
 }

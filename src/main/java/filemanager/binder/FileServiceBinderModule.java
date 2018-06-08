@@ -1,17 +1,18 @@
 package filemanager.binder;
 
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import filemanager.configuration.FileHandlerConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
-import filemanager.directorytracker.TrackerFileDirectory;
+import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
 import filemanager.resource.ClientResource;
-import filemanager.service.ConverterFromJsonToXmlService;
-import filemanager.service.JsonReader;
-import filemanager.service.XmlWriter;
-import filemanager.serviceImpl.ConverterFromJsonToXmlServiceImpl;
-import filemanager.serviceImpl.JsonReaderImpl;
-import filemanager.serviceImpl.XmlWriterImpl;
+import filemanager.service.InteractionGroupService;
+import filemanager.service.JsonReadService;
+import filemanager.service.XmlWriteService;
+import filemanager.service.impl.InteractionGroupServiceImpl;
+import filemanager.service.impl.JsonReadServiceImpl;
+import filemanager.service.impl.XmlWriteServiceImpl;
 
 public class FileServiceBinderModule extends AbstractModule {
 
@@ -23,15 +24,16 @@ public class FileServiceBinderModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(TrackerFileDirectory.class).to(ScheduleFileDirectory.class);
-        bind(ConverterFromJsonToXmlService.class).to(ConverterFromJsonToXmlServiceImpl.class);
-        bind(JsonReader.class).to(JsonReaderImpl.class);
-        bind(XmlWriter.class).to(XmlWriterImpl.class);
+        bind(InteractionGroupService.class).to(InteractionGroupServiceImpl.class);
+        bind(JsonReadService.class).to(JsonReadServiceImpl.class);
+        bind(XmlWriteService.class).to(XmlWriteServiceImpl.class);
     }
 
     @Provides
-    public ScheduleFileDirectory provideConfigurationFields(ConverterFromJsonToXmlService service) {
-        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(service);
+    public ScheduleFileDirectory provideScheduleFileDirectory(JsonReadService readService,
+                                                              InteractionGroupService groupService,
+                                                              XmlWriteService writeService) {
+        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService);
         fileDirectory.setEnvironment(configuration.getEnvironment());
         fileDirectory.setFileNamePattern(configuration.getFileNamePattern());
         fileDirectory.setOutputPath(configuration.getOutputPath());
@@ -40,15 +42,26 @@ public class FileServiceBinderModule extends AbstractModule {
     }
 
     @Provides
-    public ClientResource getClient(ScheduleFileDirectory scheduleFileDirectory) {
+    public WatchFileDirectory provideWatchFileDirectory(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
+        WatchFileDirectory fileDirectory = new WatchFileDirectory(readService, groupService, writeService);
+        fileDirectory.setEnvironment(configuration.getEnvironment());
+        fileDirectory.setFileNamePattern(configuration.getFileNamePattern());
+        fileDirectory.setOutputPath(configuration.getOutputPath());
+        fileDirectory.setRootFolder(configuration.getRootFolder());
+        return fileDirectory;
+    }
+
+    @Provides
+    public ClientResource provideClientResource(ScheduleFileDirectory scheduleFileDirectory) {
         ClientResource clientResource = new ClientResource(scheduleFileDirectory);
         return clientResource;
     }
 
     @Provides
-    public InternetConnectionHealthCheck getConnectionHealthCheck() {
+    public InternetConnectionHealthCheck provideConnectionHealthCheck() {
         InternetConnectionHealthCheck connectionHealthCheck = new InternetConnectionHealthCheck();
         connectionHealthCheck.setConnectionCheckUrl(configuration.getHealthCheckConectionUrl());
         return connectionHealthCheck;
     }
+
 }

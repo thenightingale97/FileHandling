@@ -1,18 +1,11 @@
 package filemanager.directorytracker;
 
-import java.time.LocalDateTime;
-
 public abstract class TrackerFileDirectory {
 
     private String rootFolder;
     private String environment;
     private String outputPath;
     private String fileNamePattern;
-    private Long timeInterval;
-
-    abstract public void goThroughToCheckFile();
-
-    abstract public void goThroughToCheckFile(LocalDateTime time);
 
     public String getRootFolder() {
         return rootFolder;
@@ -46,11 +39,4 @@ public abstract class TrackerFileDirectory {
         this.fileNamePattern = fileNamePattern;
     }
 
-    public Long getTimeInterval() {
-        return timeInterval;
-    }
-
-    public void setTimeInterval(Long timeInterval) {
-        this.timeInterval = timeInterval;
-    }
 }

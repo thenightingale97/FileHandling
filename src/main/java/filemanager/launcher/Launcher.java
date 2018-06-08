@@ -6,10 +6,12 @@ import filemanager.binder.FileServiceBinderModule;
 import filemanager.configuration.FileHandlerConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
+import filemanager.model.Command;
 import filemanager.resource.ClientResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 public class Launcher extends Application<FileHandlerConfiguration> {
@@ -24,7 +26,8 @@ public class Launcher extends Application<FileHandlerConfiguration> {
         environment.jersey().register(guice.getInstance(ClientResource.class));
         environment.lifecycle().scheduledExecutorService("scheduledTracker")
                 .build()
-                .schedule((Runnable) trackerFileDirectory::goThroughToCheckFile, Long.parseLong(configuration.getTimeInterval()), TimeUnit.MINUTES);
+                .scheduleWithFixedDelay(() ->
+                        trackerFileDirectory.goThroughToCheckFile(new Command().setDate(LocalDateTime.now())), 0, Long.parseLong(configuration.getTimeInterval()), TimeUnit.MINUTES);
         environment.healthChecks().register("Internet connection check", guice.getInstance(InternetConnectionHealthCheck.class));
         environment.healthChecks().runHealthChecks();
     }
