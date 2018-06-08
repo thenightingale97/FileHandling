@@ -2,6 +2,8 @@ package filemanager.resource;
 
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.model.Command;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.Consumes;
@@ -10,16 +12,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
 @Path("/main")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientResource {
 
     private ScheduleFileDirectory scheduleFileDirectory;
-
-    public ClientResource() {
-    }
-
-    public ClientResource(ScheduleFileDirectory scheduleFileDirectory) {
-        this.scheduleFileDirectory = scheduleFileDirectory;
-    }
 
     @POST
     @Path("/check")
