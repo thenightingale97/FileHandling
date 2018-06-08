@@ -1,9 +1,14 @@
-environment: production
-rootFolder: /home/ykato/Documents/bvpixel/
-outputPath: /home/ykato/Documents/clients/
-fileNamePattern: PPConversion
-timeInterval: 1
-healthCheckConectionUrl: https://www.pravda.com.ua/
+environmentConfig:
+  environment: production
+  rootFolder: /home/ykato/Documents/bvpixel/
+  outputPath: /home/ykato/Documents/clients/
+  fileNamePattern: PPConversion
+  timeInterval: 1
+  healthCheckConectionUrl: https://www.pravda.com.ua/
+mongoConfig:
+  host: localhost
+  port: 27017
+  database: jobdb
 server:
   applicationConnectors:
   - type: http
