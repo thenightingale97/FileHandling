@@ -26,11 +26,8 @@ public class Launcher extends Application<FileHandlerConfiguration> {
         environment.jersey().register(guice.getInstance(ClientResource.class));
         environment.lifecycle().scheduledExecutorService("scheduledTracker")
                 .build()
-                .scheduleWithFixedDelay(() -> {
-                    Command command = new Command();
-                    command.setDate(LocalDateTime.now());
-                    trackerFileDirectory.goThroughToCheckFile(command);
-                }, 0, Long.parseLong(configuration.getTimeInterval()), TimeUnit.MINUTES);
+                .scheduleWithFixedDelay(() ->
+                        trackerFileDirectory.goThroughToCheckFile(new Command().setDate(LocalDateTime.now())), 0, Long.parseLong(configuration.getTimeInterval()), TimeUnit.MINUTES);
         environment.healthChecks().register("Internet connection check", guice.getInstance(InternetConnectionHealthCheck.class));
         environment.healthChecks().runHealthChecks();
     }

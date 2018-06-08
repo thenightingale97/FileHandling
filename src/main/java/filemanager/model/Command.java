@@ -20,8 +20,9 @@ public class Command {
     }
 
     @JsonProperty
-    public void setDate(LocalDateTime date) {
+    public Command setDate(LocalDateTime date) {
         this.date = date;
+        return this;
     }
 
     @JsonProperty
