@@ -39,8 +39,8 @@ public class InteractionGroupServiceTest {
         testValue.add(interaction1);
         testValue.add(interaction2);
         testValue.add(interaction3);
-
-        HashMap<String, List<Interaction>> hashMap = new HashMap<>(groupService.groupByClient(testValue));
+        
+        HashMap<String, List<Interaction>> hashMap = groupService.groupByClient(testValue);
 
         assertEquals(2, hashMap.keySet().size());
     }
@@ -48,7 +48,7 @@ public class InteractionGroupServiceTest {
     @Test
     public void groupByClientEmptyList() {
         List<Interaction> testValue = new ArrayList<>();
-        HashMap<String, List<Interaction>> hashMap = new HashMap<>(groupService.groupByClient(testValue));
+        HashMap<String, List<Interaction>> hashMap = groupService.groupByClient(testValue);
 
         assertEquals(0, hashMap.size());
     }
