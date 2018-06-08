@@ -31,8 +31,9 @@ public class Command {
     }
 
     @JsonProperty
-    public void setClient(String client) {
+    public Command setClient(String client) {
         this.client = client;
+        return this;
     }
 
     @Override
