@@ -8,7 +8,6 @@ import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
 import filemanager.resource.ClientResource;
 import filemanager.service.InteractionGroupService;
-import filemanager.service.JobWriterService;
 import filemanager.service.JsonReadService;
 import filemanager.service.XmlWriteService;
 import filemanager.service.impl.InteractionGroupServiceImpl;
@@ -33,9 +32,8 @@ public class FileServiceBinderModule extends AbstractModule {
     @Provides
     public ScheduleFileDirectory provideScheduleFileDirectory(JsonReadService readService,
                                                               InteractionGroupService groupService,
-                                                              XmlWriteService writeService,
-                                                              JobWriterService jobWriterService) {
-        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService, jobWriterService);
+                                                              XmlWriteService writeService) {
+        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService);
         fileDirectory.setEnvironment(configuration.getEnvironment());
         fileDirectory.setFileNamePattern(configuration.getFileNamePattern());
         fileDirectory.setOutputPath(configuration.getOutputPath());
