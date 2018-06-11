@@ -31,6 +31,7 @@ public class FileServiceBinderModule extends AbstractModule {
         bind(InteractionGroupService.class).to(InteractionGroupServiceImpl.class);
         bind(JsonReadService.class).to(JsonReadServiceImpl.class);
         bind(XmlWriteService.class).to(XmlWriteServiceImpl.class);
+        bind(JobWriterService.class).to(JobWriterServiceImpl.class);
     }
 
     @Provides
@@ -74,11 +75,5 @@ public class FileServiceBinderModule extends AbstractModule {
         MongoClient mongoClient = new MongoClient(configuration.getMongoConfig().getHost(),
                 configuration.getMongoConfig().getPort());
         return mongoClient.getDatabase(configuration.getMongoConfig().getDatabase());
-    }
-
-    @Provides
-    public JobWriterService provideJobWriterService(MongoDatabase database) {
-        JobWriterService jobWriterService = new JobWriterServiceImpl(database);
-        return jobWriterService;
     }
 }
