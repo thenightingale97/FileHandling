@@ -2,10 +2,9 @@ package filemanager.configuration;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dropwizard.Configuration;
 import org.hibernate.validator.constraints.NotEmpty;
 
-public class FileHandlerConfiguration extends Configuration {
+public class EnvironmentConfiguration {
     @NotEmpty
     private String environment;
 
@@ -77,9 +76,10 @@ public class FileHandlerConfiguration extends Configuration {
     public String getHealthCheckConectionUrl() {
         return healthCheckConectionUrl;
     }
-    
+
     @JsonProperty
     public void setHealthCheckConectionUrl(String healthCheckConectionUrl) {
         this.healthCheckConectionUrl = healthCheckConectionUrl;
     }
+
 }

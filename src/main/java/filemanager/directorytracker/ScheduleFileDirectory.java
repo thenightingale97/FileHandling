@@ -1,9 +1,10 @@
 package filemanager.directorytracker;
 
 import com.google.inject.Inject;
-import filemanager.model.Command;
 import filemanager.model.Interaction;
+import filemanager.model.Job;
 import filemanager.service.InteractionGroupService;
+import filemanager.service.JobWriterService;
 import filemanager.service.JsonReadService;
 import filemanager.service.XmlWriteService;
 
@@ -13,6 +14,7 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,17 +33,19 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
     private List<Interaction> interactions;
 
     @Inject
-    public ScheduleFileDirectory(JsonReadService readService, InteractionGroupService groupService, XmlWriteService writeService) {
+    public ScheduleFileDirectory(JsonReadService readService,
+                                 InteractionGroupService groupService,
+                                 XmlWriteService writeService) {
         this.readService = readService;
         this.groupService = groupService;
         this.writeService = writeService;
     }
 
-    public void goThroughToCheckFile(Command command) {
+    public void goThroughToCheckFile(Job job) {
         interactionsMap = new HashMap<>();
         interactions = new ArrayList<>();
-        LocalDateTime time = command.getDate();
-        String commandClientName = command.getClient();
+        LocalDateTime time = LocalDateTime.ofInstant(job.getTargetTime().toInstant(), Clock.systemUTC().getZone());
+        String commandClientName = job.getClient();
         Path allPath = Paths.get(getRootFolder() + getEnvironment() + "/" +
                 time.getYear() + "/" +
                 time.getMonthValue() + "/" +
