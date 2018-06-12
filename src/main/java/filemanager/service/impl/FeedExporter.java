@@ -43,12 +43,12 @@ public class FeedExporter {
                     job.setEndHour(ZonedDateTime.now());
                     job.setTargetTime(job.getTargetTime());
             }
-        } finally {
+            job.setStatus(JobStatus.COMPLETE);
+        } catch (Exception e) {
             job.setStatus(JobStatus.FAILED);
+        } finally {
             writerService.updateJob(job, jobId);
         }
-        job.setStatus(JobStatus.COMPLETE);
-        writerService.updateJob(job, jobId);
     }
 
 
