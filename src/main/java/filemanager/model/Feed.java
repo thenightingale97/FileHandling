@@ -14,5 +14,5 @@ public class Feed {
     public Feed(List<Interaction> interactions) {
         this.interactions = interactions;
     }
-    
+
 }

@@ -1,10 +1,14 @@
 package filemanager.healthchecks;
 
 import com.codahale.metrics.health.HealthCheck;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+@Getter
+@Setter
 public class InternetConnectionHealthCheck extends HealthCheck {
 
     private String connectionCheckUrl;
@@ -21,13 +25,5 @@ public class InternetConnectionHealthCheck extends HealthCheck {
         } else {
             return Result.unhealthy("Internet connection is absent.");
         }
-    }
-
-    public String getConnectionCheckUrl() {
-        return connectionCheckUrl;
-    }
-
-    public void setConnectionCheckUrl(String connectionCheckUrl) {
-        this.connectionCheckUrl = connectionCheckUrl;
     }
 }
