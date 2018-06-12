@@ -3,12 +3,16 @@ package filemanager.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
 
+@Accessors(chain = true)
 @Getter
+@Setter
 @ToString
 public class Command {
 
@@ -21,20 +25,5 @@ public class Command {
 
     @JsonProperty
     private String client;
-
-    public Command setDate(LocalDateTime date) {
-        this.date = date;
-        return this;
-    }
-
-    public Command setClient(String client) {
-        this.client = client;
-        return this;
-    }
-
-    public Command setJobType(JobType jobType) {
-        this.jobType = jobType;
-        return this;
-    }
 
 }
