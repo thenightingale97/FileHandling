@@ -8,15 +8,11 @@ import filemanager.configuration.ApplicationConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
-import filemanager.resource.ClientResource;
 import filemanager.service.InteractionGroupService;
 import filemanager.service.JobWriterService;
 import filemanager.service.JsonReadService;
 import filemanager.service.XmlWriteService;
-import filemanager.service.impl.InteractionGroupServiceImpl;
-import filemanager.service.impl.JobWriterServiceImpl;
-import filemanager.service.impl.JsonReadServiceImpl;
-import filemanager.service.impl.XmlWriteServiceImpl;
+import filemanager.service.impl.*;
 
 public class FileServiceBinderModule extends AbstractModule {
 
@@ -31,15 +27,15 @@ public class FileServiceBinderModule extends AbstractModule {
         bind(InteractionGroupService.class).to(InteractionGroupServiceImpl.class);
         bind(JsonReadService.class).to(JsonReadServiceImpl.class);
         bind(XmlWriteService.class).to(XmlWriteServiceImpl.class);
+        bind(FeedExporter.class);
         bind(JobWriterService.class).to(JobWriterServiceImpl.class);
     }
 
     @Provides
     public ScheduleFileDirectory provideScheduleFileDirectory(JsonReadService readService,
                                                               InteractionGroupService groupService,
-                                                              XmlWriteService writeService,
-                                                              JobWriterService jobWriterService) {
-        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService, jobWriterService);
+                                                              XmlWriteService writeService) {
+        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService);
         fileDirectory.setEnvironment(configuration.getEnvironmentConfig().getEnvironment());
         fileDirectory.setFileNamePattern(configuration.getEnvironmentConfig().getFileNamePattern());
         fileDirectory.setOutputPath(configuration.getEnvironmentConfig().getOutputPath());
@@ -55,12 +51,6 @@ public class FileServiceBinderModule extends AbstractModule {
         fileDirectory.setOutputPath(configuration.getEnvironmentConfig().getOutputPath());
         fileDirectory.setRootFolder(configuration.getEnvironmentConfig().getRootFolder());
         return fileDirectory;
-    }
-
-    @Provides
-    public ClientResource provideClientResource(ScheduleFileDirectory scheduleFileDirectory) {
-        ClientResource clientResource = new ClientResource(scheduleFileDirectory);
-        return clientResource;
     }
 
     @Provides

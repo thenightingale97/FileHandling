@@ -13,6 +13,8 @@ public class Command {
 
     private String client;
 
+    private JobType jobType;
+
     @JsonProperty
     @JsonFormat(pattern = "yyyy-MM-dd HH")
     public LocalDateTime getDate() {
@@ -33,6 +35,15 @@ public class Command {
     @JsonProperty
     public Command setClient(String client) {
         this.client = client;
+        return this;
+    }
+
+    public JobType getJobType() {
+        return jobType;
+    }
+
+    public Command setJobType(JobType jobType) {
+        this.jobType = jobType;
         return this;
     }
 

@@ -1,9 +1,12 @@
 package filemanager.service;
 
-import filemanager.model.Command;
+import filemanager.model.Job;
+import org.bson.types.ObjectId;
 
 public interface JobWriterService {
 
-    void saveJobInformation(String clientName, Command command);
+    ObjectId saveJob(Job job);
+
+    void updateJob(Job job, ObjectId jobId);
 
 }
