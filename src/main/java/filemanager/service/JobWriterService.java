@@ -7,6 +7,6 @@ public interface JobWriterService {
 
     ObjectId saveJob(Job job);
 
-    void updateJob(Job job, ObjectId jobId);
+    void updateJob(Job job);
 
 }

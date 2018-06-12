@@ -8,10 +8,7 @@ import filemanager.configuration.ApplicationConfiguration;
 import filemanager.directorytracker.ScheduleFileDirectory;
 import filemanager.directorytracker.WatchFileDirectory;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
-import filemanager.service.InteractionGroupService;
-import filemanager.service.JobWriterService;
-import filemanager.service.JsonReadService;
-import filemanager.service.XmlWriteService;
+import filemanager.service.*;
 import filemanager.service.impl.*;
 
 public class FileServiceBinderModule extends AbstractModule {
@@ -29,13 +26,15 @@ public class FileServiceBinderModule extends AbstractModule {
         bind(XmlWriteService.class).to(XmlWriteServiceImpl.class);
         bind(FeedExporter.class);
         bind(JobWriterService.class).to(JobWriterServiceImpl.class);
+        bind(StatsExportService.class).to(StatsExportServiceImpl.class);
     }
 
     @Provides
     public ScheduleFileDirectory provideScheduleFileDirectory(JsonReadService readService,
                                                               InteractionGroupService groupService,
-                                                              XmlWriteService writeService) {
-        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService);
+                                                              XmlWriteService writeService,
+                                                              StatsExportService exportService) {
+        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService, exportService);
         fileDirectory.setEnvironment(configuration.getEnvironmentConfig().getEnvironment());
         fileDirectory.setFileNamePattern(configuration.getEnvironmentConfig().getFileNamePattern());
         fileDirectory.setOutputPath(configuration.getEnvironmentConfig().getOutputPath());

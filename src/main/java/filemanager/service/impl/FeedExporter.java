@@ -31,6 +31,7 @@ public class FeedExporter {
         job.setJobType(command.getJobType());
 
         ObjectId jobId = writerService.saveJob(job);
+        job.setId(jobId);
         try {
             switch (command.getJobType()) {
                 case SCHEDULED:
@@ -45,9 +46,10 @@ public class FeedExporter {
             }
             job.setStatus(JobStatus.COMPLETE);
         } catch (Exception e) {
+            e.printStackTrace();
             job.setStatus(JobStatus.FAILED);
         } finally {
-            writerService.updateJob(job, jobId);
+            writerService.updateJob(job);
         }
     }
 
