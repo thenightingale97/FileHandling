@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import filemanager.model.Command;
 import filemanager.model.JobType;
 import filemanager.service.impl.FeedExporter;
+import lombok.NoArgsConstructor;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.Consumes;
@@ -12,12 +13,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
 @Path("/main")
+@NoArgsConstructor
 public class ClientResource {
 
     private FeedExporter feedExporter;
-
-    public ClientResource() {
-    }
 
     @Inject
     public ClientResource(FeedExporter feedExporter) {
