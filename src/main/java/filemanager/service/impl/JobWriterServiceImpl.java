@@ -2,8 +2,6 @@ package filemanager.service.impl;
 
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
-import com.mongodb.MongoException;
-import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import filemanager.model.Job;
@@ -36,7 +34,7 @@ public class JobWriterServiceImpl implements JobWriterService {
     }
 
     @Override
-    public void updateJob(Job job, ObjectId jobId) {
+    public void updateJob(Job job) {
         BasicDBObject updateFields = new BasicDBObject();
         if (job.getClient() != null && !job.getClient().isEmpty()) {
             updateFields.append(Fields.CLIENT, job.getClient());
@@ -53,7 +51,7 @@ public class JobWriterServiceImpl implements JobWriterService {
 
         BasicDBObject setQuery = new BasicDBObject();
         setQuery.append("$set", updateFields);
-        collection.updateOne(eq(Fields.ID, jobId), setQuery);
+        collection.updateOne(eq(Fields.ID, job.getId()), setQuery);
 
     }
 

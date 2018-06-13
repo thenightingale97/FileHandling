@@ -1,11 +1,12 @@
 package filemanager.directorytracker;
 
 import com.google.inject.Inject;
+import filemanager.model.ExportStats;
 import filemanager.model.Interaction;
 import filemanager.model.Job;
 import filemanager.service.InteractionGroupService;
-import filemanager.service.JobWriterService;
 import filemanager.service.JsonReadService;
+import filemanager.service.StatsExportService;
 import filemanager.service.XmlWriteService;
 
 import java.io.FileInputStream;
@@ -28,6 +29,8 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     private XmlWriteService writeService;
 
+    private StatsExportService statsExportService;
+
     private HashMap<String, List<Interaction>> interactionsMap;
 
     private List<Interaction> interactions;
@@ -35,10 +38,12 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
     @Inject
     public ScheduleFileDirectory(JsonReadService readService,
                                  InteractionGroupService groupService,
-                                 XmlWriteService writeService) {
+                                 XmlWriteService writeService,
+                                 StatsExportService statsExportService) {
         this.readService = readService;
         this.groupService = groupService;
         this.writeService = writeService;
+        this.statsExportService = statsExportService;
     }
 
     public void goThroughToCheckFile(Job job) {
@@ -74,6 +79,11 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    ExportStats stats = new ExportStats();
+                    stats.setClient(clientName);
+                    stats.setJobId(job.getId());
+                    stats.setTransactionAmount(interactionList.size());
+                    statsExportService.updateStatsRecords(stats);
                 }
 
             });
