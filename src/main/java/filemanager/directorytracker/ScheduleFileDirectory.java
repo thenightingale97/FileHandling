@@ -79,12 +79,11 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    interactionList.forEach((interaction -> {
-                        ExportStats stats = new ExportStats();
-                        stats.setClient(clientName);
-                        stats.setJobId(job.getId());
-                        statsExportService.updateStatsRecords(stats);
-                    }));
+                    ExportStats stats = new ExportStats();
+                    stats.setClient(clientName);
+                    stats.setJobId(job.getId());
+                    stats.setTransactionAmount(interactionList.size());
+                    statsExportService.updateStatsRecords(stats);
                 }
 
             });

@@ -16,5 +16,5 @@ public class ExportStats {
 
     private ObjectId jobId;
 
-    private Integer transactionCount;
+    private Integer transactionAmount;
 }
