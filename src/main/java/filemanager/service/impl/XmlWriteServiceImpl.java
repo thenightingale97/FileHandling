@@ -1,12 +1,16 @@
 package filemanager.service.impl;
 
+import com.codahale.metrics.Counter;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import filemanager.model.Interaction;
 import filemanager.model.Feed;
+import filemanager.model.Interaction;
 import filemanager.service.XmlWriteService;
+import lombok.NoArgsConstructor;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,7 +19,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Singleton
+@NoArgsConstructor
 public class XmlWriteServiceImpl implements XmlWriteService {
+
+    private Counter counter;
+
+    @Inject
+    public XmlWriteServiceImpl(Counter counter) {
+        this.counter = counter;
+    }
 
     @Override
     public void writeXmlFile(List<Interaction> interactions, String outputPath) throws IOException {
@@ -24,6 +36,7 @@ public class XmlWriteServiceImpl implements XmlWriteService {
         XmlMapper xmlMapper = new XmlMapper();
         Feed feed = new Feed(interactions);
         xmlMapper.writeValue(file, feed);
+        counter.inc(interactions.size());
     }
 
     @Override

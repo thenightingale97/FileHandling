@@ -1,5 +1,6 @@
 package filemanager.launcher;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import filemanager.binder.FileServiceBinderModule;
@@ -22,7 +23,7 @@ public class Launcher extends Application<ApplicationConfiguration> {
 
     @Override
     public void run(ApplicationConfiguration configuration, Environment environment) {
-        Injector guice = Guice.createInjector(new FileServiceBinderModule(configuration));
+        Injector guice = Guice.createInjector(new FileServiceBinderModule(configuration, environment));
         FeedExporter feedExporter = guice.getInstance(FeedExporter.class);
         environment.jersey().register(guice.getInstance(ClientResource.class));
         environment.lifecycle().scheduledExecutorService("scheduledTracker")
