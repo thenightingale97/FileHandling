@@ -1,6 +1,7 @@
 package filemanager.service.impl;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -17,16 +18,17 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Singleton
 @NoArgsConstructor
 public class XmlWriteServiceImpl implements XmlWriteService {
 
-    private Counter counter;
+    private Map<String, Counter> counters;
 
     @Inject
-    public XmlWriteServiceImpl(Counter counter) {
-        this.counter = counter;
+    public XmlWriteServiceImpl(Map<String, Counter> counters) {
+        this.counters = counters;
     }
 
     @Override
@@ -36,7 +38,7 @@ public class XmlWriteServiceImpl implements XmlWriteService {
         XmlMapper xmlMapper = new XmlMapper();
         Feed feed = new Feed(interactions);
         xmlMapper.writeValue(file, feed);
-        counter.inc(interactions.size());
+        counters.get("exportsAmount").inc(interactions.size());
     }
 
     @Override
