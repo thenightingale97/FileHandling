@@ -19,9 +19,12 @@ public class ClientResource {
 
     private FeedExporter feedExporter;
 
+    private RequestPassCheck check;
+
     @Inject
-    public ClientResource(FeedExporter feedExporter) {
+    public ClientResource(FeedExporter feedExporter, RequestPassCheck check) {
         this.feedExporter = feedExporter;
+        this.check = check;
     }
 
     @POST
@@ -29,6 +32,7 @@ public class ClientResource {
     @Path("/check")
     @Consumes(MediaType.APPLICATION_JSON)
     public int checkForFiles(Command command) {
+        check.checkPass(command);
         command.setJobType(JobType.ON_DEMAND);
         feedExporter.startExport(command);
         return HttpStatus.OK_200;

@@ -26,4 +26,7 @@ public class Command {
     @JsonProperty
     private String client;
 
+    @JsonProperty
+    private String passKey;
+
 }
