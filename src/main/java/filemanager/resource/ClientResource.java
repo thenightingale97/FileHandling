@@ -1,5 +1,6 @@
 package filemanager.resource;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import filemanager.model.Command;
 import filemanager.model.JobType;
@@ -24,6 +25,7 @@ public class ClientResource {
     }
 
     @POST
+    @Timed(name = "checkForFiles")
     @Path("/check")
     @Consumes(MediaType.APPLICATION_JSON)
     public int checkForFiles(Command command) {
