@@ -31,8 +31,7 @@ public class ClientResource {
     @Path("/check")
     @Consumes(MediaType.APPLICATION_JSON)
     @KeyCheck
-    @QueryParam("keyPass")
-    public int checkForFiles(Command command) {
+    public int checkForFiles(@QueryParam("keyPass") String keyPass, Command command) {
         command.setJobType(JobType.ON_DEMAND);
         feedExporter.startExport(command);
         return HttpStatus.OK_200;
