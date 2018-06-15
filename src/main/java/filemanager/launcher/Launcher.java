@@ -1,11 +1,11 @@
 package filemanager.launcher;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import filemanager.binder.FileServiceBinderModule;
 import filemanager.configuration.ApplicationConfiguration;
 import filemanager.healthchecks.InternetConnectionHealthCheck;
+import filemanager.interceptor.RequestKeyCheckInterceptor;
 import filemanager.model.Command;
 import filemanager.model.JobType;
 import filemanager.resource.ClientResource;
@@ -36,5 +36,7 @@ public class Launcher extends Application<ApplicationConfiguration> {
                         TimeUnit.MINUTES);
         environment.healthChecks().register("Internet connection check", guice.getInstance(InternetConnectionHealthCheck.class));
         environment.healthChecks().runHealthChecks();
+        environment.jersey().register(RequestKeyCheckInterceptor.class);
+
     }
 }
