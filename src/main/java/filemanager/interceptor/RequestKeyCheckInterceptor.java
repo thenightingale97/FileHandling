@@ -1,6 +1,5 @@
 package filemanager.interceptor;
 
-import filemanager.exceptions.DateIsEmptyException;
 import filemanager.model.Command;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -21,12 +20,9 @@ public class RequestKeyCheckInterceptor implements MethodInterceptor {
         Object[] methodArguments = methodInvocation.getArguments();
         String key = (String) methodArguments[0];
         Command command = (Command) methodArguments[1];
-        if (key.isEmpty()) {
+        if (key == null || key.isEmpty()) {
             throw new ForbiddenException();
         } else {
-            if (command.getDate() == null) {
-                throw new DateIsEmptyException("The date field is required!");
-            }
             String hash = keyHash(key);
             LOGGER.info(hash + " has been authorized to run job: \n" +
                     "date: " + command.getDate() + "\n" +
