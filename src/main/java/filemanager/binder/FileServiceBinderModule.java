@@ -43,8 +43,9 @@ public class FileServiceBinderModule extends AbstractModule {
     public ScheduleFileDirectory provideScheduleFileDirectory(JsonReadService readService,
                                                               InteractionGroupService groupService,
                                                               XmlWriteService writeService,
-                                                              StatsExportService exportService) {
-        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService, exportService);
+                                                              StatsExportService exportService,
+                                                              MetricRegistry metricRegistry) {
+        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService, exportService, metricRegistry);
         fileDirectory.setEnvironment(configuration.getEnvironmentConfig().getEnvironment());
         fileDirectory.setFileNamePattern(configuration.getEnvironmentConfig().getFileNamePattern());
         fileDirectory.setOutputPath(configuration.getEnvironmentConfig().getOutputPath());

@@ -10,7 +10,6 @@ import filemanager.model.Job;
 import filemanager.model.JobStatus;
 import filemanager.service.JobWriterService;
 import org.bson.types.ObjectId;
-import org.eclipse.jetty.util.Fields;
 
 import java.time.Clock;
 import java.time.ZonedDateTime;
@@ -62,18 +61,18 @@ public class FeedExporter {
             }
             job.setStatus(JobStatus.COMPLETE);
             TaggedMetricName jobMetricName = new TaggedMetricName(FeedExporter.class, Fields.COMPLETED_TRANSACTION_COUNTER, tags);
-            counters.put(jobMetricName.getName(), metricRegistry.counter(jobMetricName.getName()));
+            counters.putIfAbsent(jobMetricName.getName(), metricRegistry.counter(jobMetricName.getName()));
             counters.get(jobMetricName.getName()).inc();
         } catch (Exception e) {
             e.printStackTrace();
             job.setStatus(JobStatus.FAILED);
             TaggedMetricName jobMetricName = new TaggedMetricName(FeedExporter.class, Fields.FAILED_TRANSACTION_COUNTER, tags);
-            counters.put(jobMetricName.getName(), metricRegistry.counter(jobMetricName.getName()));
+            counters.putIfAbsent(jobMetricName.getName(), metricRegistry.counter(jobMetricName.getName()));
             counters.get(jobMetricName.getName()).inc();
         } finally {
             writerService.updateJob(job);
             TaggedMetricName jobMetricName = new TaggedMetricName(FeedExporter.class, Fields.TRANSACTION_COUNTER, tags);
-            counters.put(jobMetricName.getName(), metricRegistry.counter(jobMetricName.getName()));
+            counters.putIfAbsent(jobMetricName.getName(), metricRegistry.counter(jobMetricName.getName()));
             counters.get(jobMetricName.getName()).inc();
         }
     }
