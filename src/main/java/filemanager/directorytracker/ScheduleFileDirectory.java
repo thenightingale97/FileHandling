@@ -1,6 +1,9 @@
 package filemanager.directorytracker;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
+import filemanager.metrics.TaggedMetricName;
 import filemanager.model.ExportStats;
 import filemanager.model.Interaction;
 import filemanager.model.Job;
@@ -20,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ScheduleFileDirectory extends TrackerFileDirectory {
 
@@ -31,18 +35,26 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
 
     private StatsExportService statsExportService;
 
+    private MetricRegistry metricRegistry;
+
     private HashMap<String, List<Interaction>> interactionsMap;
 
     private List<Interaction> interactions;
+
+    private Map<String, Counter> counters;
+
 
     @Inject
     public ScheduleFileDirectory(JsonReadService readService,
                                  InteractionGroupService groupService,
                                  XmlWriteService writeService,
-                                 StatsExportService statsExportService) {
+                                 StatsExportService statsExportService,
+                                 MetricRegistry metricRegistry) {
         this.readService = readService;
         this.groupService = groupService;
         this.writeService = writeService;
+        this.counters = new HashMap<>();
+        this.metricRegistry = metricRegistry;
         this.statsExportService = statsExportService;
     }
 
@@ -76,6 +88,11 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
                     String temporaryPath = getOutputPath() + clientName;
                     try {
                         writeService.writeXmlFile(interactionList, temporaryPath);
+                        Map<String, String> tags = new HashMap<>();
+                        tags.put(Tags.CLIENT, clientName);
+                        TaggedMetricName exportMetricName = new TaggedMetricName(XmlWriteService.class, MetricType.EXPORT_COUNTER, tags);
+                        counters.putIfAbsent(exportMetricName.getName(), metricRegistry.counter(exportMetricName.getName()));
+                        counters.get(exportMetricName.getName()).inc(interactionList.size());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -90,7 +107,16 @@ public class ScheduleFileDirectory extends TrackerFileDirectory {
         }
     }
 
+    private static class MetricType {
+        final static String EXPORT_COUNTER = "exports";
+    }
+
+    private static class Tags {
+        final static String CLIENT = "client";
+    }
+
     private boolean matchPattern(String path) {
         return path.substring(path.lastIndexOf("/") + 1).contains(getFileNamePattern());
     }
+
 }

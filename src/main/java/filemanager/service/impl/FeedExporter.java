@@ -1,17 +1,19 @@
 package filemanager.service.impl;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import filemanager.directorytracker.ScheduleFileDirectory;
+import filemanager.metrics.TaggedMetricName;
 import filemanager.model.Command;
 import filemanager.model.Job;
 import filemanager.model.JobStatus;
 import filemanager.service.JobWriterService;
 import org.bson.types.ObjectId;
-import org.eclipse.jetty.util.Fields;
 
 import java.time.Clock;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FeedExporter {
@@ -22,13 +24,16 @@ public class FeedExporter {
 
     private Map<String, Counter> counters;
 
+    private MetricRegistry metricRegistry;
+
     @Inject
     public FeedExporter(ScheduleFileDirectory scheduleFileDirectory,
                         JobWriterService writerService,
-                        Map<String, Counter> counters) {
+                        MetricRegistry metricRegistry) {
         this.scheduleFileDirectory = scheduleFileDirectory;
         this.writerService = writerService;
-        this.counters = counters;
+        this.metricRegistry = metricRegistry;
+        this.counters = new HashMap<>();
     }
 
     public void startExport(Command command) {
@@ -40,6 +45,8 @@ public class FeedExporter {
 
         ObjectId jobId = writerService.saveJob(job);
         job.setId(jobId);
+        Map<String, String> tags = new HashMap<>();
+        tags.put(Tags.JOB_TYPE, job.getJobType().name());
         try {
             switch (command.getJobType()) {
                 case SCHEDULED:
@@ -53,21 +60,31 @@ public class FeedExporter {
                     job.setTargetTime(job.getTargetTime());
             }
             job.setStatus(JobStatus.COMPLETE);
-            counters.get(Fields.COMPLETED_TRANSACTION_COUNTER).inc();
+            TaggedMetricName jobMetricName = new TaggedMetricName(FeedExporter.class, Fields.COMPLETED_TRANSACTION_COUNTER, tags);
+            counters.putIfAbsent(jobMetricName.getName(), metricRegistry.counter(jobMetricName.getName()));
+            counters.get(jobMetricName.getName()).inc();
         } catch (Exception e) {
             e.printStackTrace();
             job.setStatus(JobStatus.FAILED);
-            counters.get(Fields.FAILED_TRANSACTION_COUNTER).inc();
+            TaggedMetricName jobMetricName = new TaggedMetricName(FeedExporter.class, Fields.FAILED_TRANSACTION_COUNTER, tags);
+            counters.putIfAbsent(jobMetricName.getName(), metricRegistry.counter(jobMetricName.getName()));
+            counters.get(jobMetricName.getName()).inc();
         } finally {
             writerService.updateJob(job);
-            counters.get(Fields.TRANSACTION_COUNTER).inc();
+            TaggedMetricName jobMetricName = new TaggedMetricName(FeedExporter.class, Fields.TRANSACTION_COUNTER, tags);
+            counters.putIfAbsent(jobMetricName.getName(), metricRegistry.counter(jobMetricName.getName()));
+            counters.get(jobMetricName.getName()).inc();
         }
     }
 
     private static class Fields {
-        final static String FAILED_TRANSACTION_COUNTER = "completedTransactionCounter";
-        final static String COMPLETED_TRANSACTION_COUNTER = "failedTransactionCounter";
-        final static String TRANSACTION_COUNTER = "transactionCounter";
+        final static String FAILED_TRANSACTION_COUNTER = "failedTransaction";
+        final static String COMPLETED_TRANSACTION_COUNTER = "completedTransaction";
+        final static String TRANSACTION_COUNTER = "transaction";
+    }
+
+    private static class Tags {
+        final static String JOB_TYPE = "jobType";
     }
 
 

@@ -1,6 +1,6 @@
 package filemanager.binder;
 
-import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.matcher.Matchers;
@@ -15,11 +15,6 @@ import filemanager.interceptor.RequestKeyCheckInterceptor;
 import filemanager.service.*;
 import filemanager.service.impl.*;
 import io.dropwizard.setup.Environment;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.codahale.metrics.MetricRegistry.name;
 
 public class FileServiceBinderModule extends AbstractModule {
 
@@ -48,8 +43,9 @@ public class FileServiceBinderModule extends AbstractModule {
     public ScheduleFileDirectory provideScheduleFileDirectory(JsonReadService readService,
                                                               InteractionGroupService groupService,
                                                               XmlWriteService writeService,
-                                                              StatsExportService exportService) {
-        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService, exportService);
+                                                              StatsExportService exportService,
+                                                              MetricRegistry metricRegistry) {
+        ScheduleFileDirectory fileDirectory = new ScheduleFileDirectory(readService, groupService, writeService, exportService, metricRegistry);
         fileDirectory.setEnvironment(configuration.getEnvironmentConfig().getEnvironment());
         fileDirectory.setFileNamePattern(configuration.getEnvironmentConfig().getFileNamePattern());
         fileDirectory.setOutputPath(configuration.getEnvironmentConfig().getOutputPath());
@@ -82,12 +78,7 @@ public class FileServiceBinderModule extends AbstractModule {
     }
 
     @Provides
-    public Map<String, Counter> counters() {
-        Map<String, Counter> counters = new HashMap<>();
-        counters.put("completedTransactionCounter", environment.metrics().counter(name(FeedExporter.class, "completed transactions amount")));
-        counters.put("transactionCounter", environment.metrics().counter(name(FeedExporter.class, "all transactions amount")));
-        counters.put("failedTransactionCounter", environment.metrics().counter(name(FeedExporter.class, "failed transactions amount")));
-        counters.put("exportsAmount", environment.metrics().counter(name(XmlWriteServiceImpl.class, "exports amount")));
-        return counters;
+    public MetricRegistry metricRegistry() {
+        return environment.metrics();
     }
 }
